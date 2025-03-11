@@ -51,3 +51,84 @@ alter user servicios_usr set search_path to core;
 
 -- Activar la extensión que permite el uso de UUID
 create extension if not exists "uuid-ossp";
+
+
+-- Con el usuario servicios_app
+
+-- ****************************************
+-- Creación de base de datos y usuarios
+-- ****************************************
+
+-- Tabla: Servicios
+create table servicios
+(
+    id            integer     not null constraint servicios_pk primary key,
+    nombre        varchar(50) not null,
+    unidad_medida varchar(10) not null
+);
+
+comment on table servicios is 'Descripcion de los servicios a monitorear';
+comment on column servicios.id is 'Id del servicio';
+comment on column servicios.nombre is 'nombre del servicio';
+comment on column servicios.unidad_medida is 'Unidad de medida del servicio';
+
+-- Tabla: Periodos
+create table periodos
+(
+    id           integer not null,
+    fecha_inicio date    not null,
+    fecha_final  date    not null,
+    total_dias   integer not null
+);
+
+alter table periodos add constraint periodos_pk primary key (id);
+
+comment on table periodos is 'Periodos de registro de consumo del servicio';
+comment on column periodos.id is 'Id del periodo';
+comment on column periodos.fecha_inicio is 'Fecha de Inicio del periodo';
+comment on column periodos.fecha_final is 'Fecha de finalización del periodo';
+comment on column periodos.total_dias is 'Cantidad de dias incluidos en el periodo';
+
+-- Tabla: consumos
+create table consumos
+(
+    periodo_id       integer not null constraint consumos_periodos_fk references periodos,
+    lectura_actual   integer not null,
+    lectura_anterior integer not null,
+    constante        float   not null,
+    servicio_id      integer not null constraint consumos_servicios_fk references servicios,
+    constraint consumos_pk primary key (servicio_id, periodo_id)
+);
+
+comment on table consumos is 'Registros los consumos por servicio por periodo';
+comment on column consumos.periodo_id is 'Id del periodo para el cual se registra el consumo';
+comment on column consumos.lectura_actual is 'Lectura del medidor en el periodo actual';
+comment on column consumos.lectura_anterior is 'Lectura del medidor en el periodo anterior';
+comment on column consumos.constante is 'Factor de multiplicación utilizada para el servicio durante el periodo';
+comment on column consumos.servicio_id is 'Id del servicio para el cual se está registrando el consumo en el periodo';
+
+-- Tabla de Componentes
+create table componentes
+(
+    id          integer generated always as identity constraint componentes_pk primary key,
+    nombre      varchar(100) not null,
+    servicio_id integer      not null constraint componentes_servicios_fk references servicios
+);
+
+comment on table componentes is 'Componentes de la tarifa de cada uno de los servicios';
+comment on column componentes.id is 'Id del Componente tarifario';
+comment on column componentes.nombre is 'Nombre del componente tarifario';
+comment on column componentes.servicio_id is 'ID del servicio que utiliza este componente tarifario';
+
+
+-- Vista: v_info_componentes
+create or replace view core.v_info_componentes as
+(
+select distinct
+    s.id servicio_id,
+    s.nombre servicio,
+    c.id componente_id,
+    c.nombre componente
+from core.servicios s
+    join core.componentes c on s.id = c.servicio_id
+);

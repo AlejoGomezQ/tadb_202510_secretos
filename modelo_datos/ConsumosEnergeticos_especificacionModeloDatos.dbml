@@ -1,0 +1,40 @@
+Table "servicios" {
+  "id" integer [pk, not null, note: 'Id del servicio']
+  "nombre" varchar(50) [not null, note: 'nombre del servicio']
+  "unidad_medida" varchar(10) [not null, note: 'Unidad de medida del servicio']
+  Note: 'Descripcion de los servicios a monitorear'
+}
+
+Table "periodos" {
+  "id" integer [pk, not null, note: 'Id del periodo']
+  "fecha_inicio" date [not null, note: 'Fecha de Inicio del periodo']
+  "fecha_final" date [not null, note: 'Fecha de finalización del periodo']
+  "total_dias" integer [not null, note: 'Cantidad de dias incluidos en el periodo']
+  Note: 'Periodos de registro de consumo del servicio'
+}
+
+Table "consumos" {
+  "periodo_id" integer [not null, note: 'Id del periodo para el cual se registra el consumo']
+  "lectura_actual" integer [not null, note: 'Lectura del medidor en el periodo actual']
+  "lectura_anterior" integer [not null, note: 'Lectura del medidor en el periodo anterior']
+  "constante" float [not null, note: 'Factor de multiplicación utilizada para el servicio durante el periodo']
+  "servicio_id" integer [not null, note: 'Id del servicio para el cual se está registrando el consumo en el periodo']
+
+  Indexes {
+    (servicio_id, periodo_id) [pk, name: "consumos_pk"]
+  }
+  Note: 'Registros los consumos por servicio por periodo'
+}
+
+Table "componentes" {
+  "id" integer [pk, increment, note: 'Id del Componente tarifario']
+  "nombre" varchar(100) [not null, note: 'Nombre del componente tarifario']
+  "servicio_id" integer [not null, note: 'ID del servicio que utiliza este componente tarifario']
+  Note: 'Componentes de la tarifa de cada uno de los servicios'
+}
+
+Ref:"periodos"."id" < "consumos"."periodo_id"
+
+Ref:"servicios"."id" < "consumos"."servicio_id"
+
+Ref:"servicios"."id" < "componentes"."servicio_id"

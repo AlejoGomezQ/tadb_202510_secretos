@@ -45,9 +45,26 @@ create user servicios_usr with encrypted password 'unaClav3';
 -- asignación de privilegios para el usuario
 grant connect on database servicios_db to servicios_usr;
 grant usage on schema core to servicios_usr;
+
+-- Privilegios sobre tablas existentes
+grant select, insert, update, delete, trigger on all tables in schema core to servicios_usr;
+
+-- privilegios sobre secuencias existentes
+grant usage, select on all sequences in schema core to servicios_usr;
+
+-- privilegios sobre funciones existentes
+grant execute on all functions in schema core to servicios_usr;
+
+-- privilegios sobre procedimientos existentes
+grant execute on all procedures in schema core to servicios_usr;
+
 alter default privileges for user servicios_usr in schema core grant insert, update, delete, select on tables to servicios_usr;
 alter default privileges for user servicios_usr in schema core grant execute on routines TO servicios_usr;
 alter user servicios_usr set search_path to core;
+
+
+
+
 
 -- Activar la extensión que permite el uso de UUID
 create extension if not exists "uuid-ossp";

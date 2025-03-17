@@ -1,3 +1,5 @@
 id;nombre;servicio_id
 1;Transmisión;1
 2;Transporte;2
+3;Generación;1
+4;Compra;2

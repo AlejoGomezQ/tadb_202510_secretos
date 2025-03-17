@@ -33,8 +33,23 @@ Table "componentes" {
   Note: 'Componentes de la tarifa de cada uno de los servicios'
 }
 
+Table "tarifas_componentes_periodos" {
+  "periodo_id" integer [not null, note: 'ID del periodo para el cual se registra el valor del componente del servicio']
+  "componente_id" integer [not null, note: 'ID del componente tarifario para el cual se registra el valor']
+  "tarifa" float [not null, default: 0, note: 'el valor del componente del servicio para el periodo indicado']
+
+  Indexes {
+    (componente_id, periodo_id) [pk, name: "tarifas_componentes_periodos_pk"]
+  }
+  Note: 'Tarifas para los componentes del cargo del servicio por periodo'
+}
+
 Ref:"periodos"."id" < "consumos"."periodo_id"
 
 Ref:"servicios"."id" < "consumos"."servicio_id"
 
 Ref:"servicios"."id" < "componentes"."servicio_id"
+
+Ref:"periodos"."id" < "tarifas_componentes_periodos"."periodo_id"
+
+Ref:"componentes"."id" < "tarifas_componentes_periodos"."componente_id"

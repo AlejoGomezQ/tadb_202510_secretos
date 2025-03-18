@@ -12,5 +12,11 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models
 
         [JsonPropertyName("componentes")]
         public int Componentes { get; set; } = 0;
+
+        [JsonPropertyName("departamentos")]
+        public int Departamentos { get; set; } = 0;
+
+        [JsonPropertyName("municipios")]
+        public int Municipios { get; set; } = 0;
     }
 }

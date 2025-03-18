@@ -27,6 +27,13 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             unResumen.Componentes = await conexion
                 .QueryFirstAsync<int>(sentenciaSQL, new DynamicParameters());
 
+            sentenciaSQL = "SELECT COUNT(id) total FROM core.departamentos";
+            unResumen.Departamentos = await conexion
+                .QueryFirstAsync<int>(sentenciaSQL, new DynamicParameters());
+
+            sentenciaSQL = "SELECT COUNT(id) total FROM core.municipios";
+            unResumen.Municipios = await conexion
+                .QueryFirstAsync<int>(sentenciaSQL, new DynamicParameters());
 
             return unResumen;
         }

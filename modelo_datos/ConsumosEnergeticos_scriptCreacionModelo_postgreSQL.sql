@@ -75,8 +75,8 @@ create extension if not exists "uuid-ossp";
 -- Tabla: Estratos
 create table core.estratos
 (
-    id              int not null constraint estratos_pk primary key,
-    descripcion     varchar(50) not null
+    id                  int not null constraint estratos_pk primary key,
+    descripcion         varchar(50) not null
 );
 
 comment on table core.estratos is 'Estratos socioeconómicos';
@@ -86,9 +86,9 @@ comment on column core.estratos.descripcion is 'descripción del estrato';
 -- Tabla: Departamentos
 create table core.departamentos
 (
-    id          integer     constraint departamentos_pk primary key,
-    nombre varchar(100) not null constraint departamentos_descripcion_uk unique,
-    dane_id varchar(2) default '00'
+    id                  int not null constraint departamentos_pk primary key,
+    nombre              varchar(100) not null constraint departamentos_descripcion_uk unique,
+    dane_id             varchar(2) default '00'
 );
 
 comment on table core.departamentos is 'Departamentos del país';
@@ -99,10 +99,10 @@ comment on column core.departamentos.dane_id is 'codigo DANE asociado al departa
 -- Tabla: Municipios
 create table core.municipios
 (
-    id          integer     constraint municipios_pk primary key,
-    nombre     varchar(100) not null,
-    departamento_id integer      not null constraint municipio_departamento_fk references core.departamentos,
-    dane_id     varchar(10)  not null constraint municipios_dane_uk unique,
+    id                  int not null constraint municipios_pk primary key,
+    nombre              varchar(100) not null,
+    departamento_id     int not null constraint municipio_departamento_fk references core.departamentos,
+    dane_id             varchar(10) not null constraint municipios_dane_uk unique,
     constraint municipio_departamento_uk unique (nombre, departamento_id)
 );
 
@@ -112,13 +112,12 @@ comment on column core.municipios.nombre is 'nombre del municipio';
 comment on column core.municipios.departamento_id is 'id del departamento asociado al municipio';
 comment on column core.municipios.dane_id is 'codigo DANE asociado al municipio';
 
-
 -- Tabla: Servicios
 create table servicios
 (
-    id            integer     not null constraint servicios_pk primary key,
-    nombre        varchar(50) not null,
-    unidad_medida varchar(10) not null
+    id                  int not null constraint servicios_pk primary key,
+    nombre              varchar(50) not null,
+    unidad_medida       varchar(10) not null
 );
 
 comment on table servicios is 'Descripcion de los servicios a monitorear';
@@ -129,26 +128,15 @@ comment on column servicios.unidad_medida is 'Unidad de medida del servicio';
 -- Tabla: Periodos
 create table periodos
 (
-    id                  integer not null,
-    municipio_id        integer not null constraint periodos_municipio_fk references core.municipios,
-    estrato_id          integer not null constraint periodos_estrato_fk references core.estratos,    
-    fecha_inicio        date    not null,
-    fecha_final         date    not null,
-    total_dias          integer not null,
+    id                  int not null constraint periodos_pk primary key,
+    fecha_inicio        date not null,
+    fecha_final         date not null,
+    total_dias          int not null,
     mes_facturacion     varchar(20) not null
 );
 
-alter table periodos add constraint periodos_pk primary key (id);
-
-alter table periodos
-    add constraint periodos_uk
-        unique (municipio_id, estrato_id, fecha_inicio, fecha_final);
-
-
 comment on table periodos is 'Periodos de registro de consumo del servicio';
 comment on column periodos.id is 'Id del periodo';
-comment on column periodos.id is 'Id Municipio para el cual rige del periodo';
-comment on column periodos.id is 'Id del estrato para el cual rige del periodo';
 comment on column periodos.fecha_inicio is 'Fecha de Inicio del periodo';
 comment on column periodos.fecha_final is 'Fecha de finalización del periodo';
 comment on column periodos.total_dias is 'Cantidad de dias incluidos en el periodo';

@@ -62,10 +62,6 @@ alter default privileges for user servicios_usr in schema core grant insert, upd
 alter default privileges for user servicios_usr in schema core grant execute on routines TO servicios_usr;
 alter user servicios_usr set search_path to core;
 
-
-
-
-
 -- Activar la extensión que permite el uso de UUID
 create extension if not exists "uuid-ossp";
 
@@ -75,6 +71,47 @@ create extension if not exists "uuid-ossp";
 -- ****************************************
 -- Creación de base de datos y usuarios
 -- ****************************************
+
+-- Tabla: Estratos
+create table core.estratos
+(
+    id              int not null constraint estratos_pk primary key,
+    descripcion     varchar(50) not null
+);
+
+comment on table core.estratos is 'Estratos socioeconómicos';
+comment on column core.estratos.id is 'Id del estrato';
+comment on column core.estratos.descripcion is 'descripción del estrato';
+
+-- Tabla: Departamentos
+create table core.departamentos
+(
+    id          integer     constraint departamentos_pk primary key,
+    nombre varchar(100) not null constraint departamentos_descripcion_uk unique,
+    dane_id varchar(2) default '00'
+);
+
+comment on table core.departamentos is 'Departamentos del país';
+comment on column core.departamentos.id is 'id del departamento';
+comment on column core.departamentos.nombre is 'nombre del departamento';
+comment on column core.departamentos.dane_id is 'codigo DANE asociado al departamento';
+
+-- Tabla: Municipios
+create table core.municipios
+(
+    id          integer     constraint municipios_pk primary key,
+    nombre     varchar(100) not null,
+    departamento_id integer      not null constraint municipio_departamento_fk references core.departamentos,
+    dane_id     varchar(10)  not null constraint municipios_dane_uk unique,
+    constraint municipio_departamento_uk unique (nombre, departamento_id)
+);
+
+comment on table core.municipios is 'Municipios del pais';
+comment on column core.municipios.id is 'id del municipio';
+comment on column core.municipios.nombre is 'nombre del municipio';
+comment on column core.municipios.departamento_id is 'id del departamento asociado al municipio';
+comment on column core.municipios.dane_id is 'codigo DANE asociado al municipio';
+
 
 -- Tabla: Servicios
 create table servicios
@@ -92,17 +129,26 @@ comment on column servicios.unidad_medida is 'Unidad de medida del servicio';
 -- Tabla: Periodos
 create table periodos
 (
-    id           integer not null,
-    fecha_inicio date    not null,
-    fecha_final  date    not null,
-    total_dias   integer not null,
-    mes_facturacion  varchar(20) not null
+    id                  integer not null,
+    municipio_id        integer not null constraint periodos_municipio_fk references core.municipios,
+    estrato_id          integer not null constraint periodos_estrato_fk references core.estratos,    
+    fecha_inicio        date    not null,
+    fecha_final         date    not null,
+    total_dias          integer not null,
+    mes_facturacion     varchar(20) not null
 );
 
 alter table periodos add constraint periodos_pk primary key (id);
 
+alter table periodos
+    add constraint periodos_uk
+        unique (municipio_id, estrato_id, fecha_inicio, fecha_final);
+
+
 comment on table periodos is 'Periodos de registro de consumo del servicio';
 comment on column periodos.id is 'Id del periodo';
+comment on column periodos.id is 'Id Municipio para el cual rige del periodo';
+comment on column periodos.id is 'Id del estrato para el cual rige del periodo';
 comment on column periodos.fecha_inicio is 'Fecha de Inicio del periodo';
 comment on column periodos.fecha_final is 'Fecha de finalización del periodo';
 comment on column periodos.total_dias is 'Cantidad de dias incluidos en el periodo';
@@ -112,24 +158,24 @@ comment on column periodos.mes_facturacion is 'Mes para el cual se genera la fac
 create table consumos
 (
     periodo_id       integer not null constraint consumos_periodos_fk references periodos,
+    servicio_id      integer not null constraint consumos_servicios_fk references servicios,
     lectura_actual   integer not null,
     lectura_anterior integer not null,
     constante        float   not null,
-    servicio_id      integer not null constraint consumos_servicios_fk references servicios,
     constraint consumos_pk primary key (servicio_id, periodo_id)
 );
 
 comment on table consumos is 'Registros los consumos por servicio por periodo';
 comment on column consumos.periodo_id is 'Id del periodo para el cual se registra el consumo';
+comment on column consumos.servicio_id is 'Id del servicio para el cual se está registrando el consumo en el periodo';
 comment on column consumos.lectura_actual is 'Lectura del medidor en el periodo actual';
 comment on column consumos.lectura_anterior is 'Lectura del medidor en el periodo anterior';
 comment on column consumos.constante is 'Factor de multiplicación utilizada para el servicio durante el periodo';
-comment on column consumos.servicio_id is 'Id del servicio para el cual se está registrando el consumo en el periodo';
 
 -- Tabla de Componentes
 create table componentes
 (
-    id          integer generated always as identity constraint componentes_pk primary key,
+    id          integer         not null constraint componentes_pk primary key,
     nombre      varchar(100) not null,
     servicio_id integer      not null constraint componentes_servicios_fk references servicios
 );
@@ -139,19 +185,19 @@ comment on column componentes.id is 'Id del Componente tarifario';
 comment on column componentes.nombre is 'Nombre del componente tarifario';
 comment on column componentes.servicio_id is 'ID del servicio que utiliza este componente tarifario';
 
--- Tabla: tarifas_componentes_periodos
-create table tarifas_componentes_periodos
+-- Tabla: costos_componentes_periodos
+create table costos_componentes_periodos
 (
-    periodo_id    integer         not null constraint tarifas_componentes_periodos_periodo_fk references periodos,
-    componente_id integer         not null constraint tarifas_componentes_periodos_componente_fk references componentes,
-    tarifa        float default 0 not null,
-    constraint tarifas_componentes_periodos_pk primary key (componente_id, periodo_id)
+    periodo_id    integer         not null constraint costos_componentes_periodos_componentes_periodos_periodo_fk references periodos,
+    componente_id integer         not null constraint costos_componentes_periodos_componentes_periodos_componente_fk references componentes,
+    costo        float not null,
+    constraint costos_componentes_periodos_pk primary key (componente_id, periodo_id)
 );
 
-comment on table tarifas_componentes_periodos is 'Tarifas para los componentes del cargo del servicio por periodo';
-comment on column tarifas_componentes_periodos.periodo_id is 'ID del periodo para el cual se registra el valor del componente del servicio';
-comment on column tarifas_componentes_periodos.componente_id is 'ID del componente tarifario para el cual se registra el valor';
-comment on column tarifas_componentes_periodos.tarifa is 'el valor del componente del servicio para el periodo indicado';
+comment on table costos_componentes_periodos is 'Tarifas para los componentes del cargo del servicio por periodo';
+comment on column costos_componentes_periodos.periodo_id is 'ID del periodo para el cual se registra el valor del componente del servicio';
+comment on column costos_componentes_periodos.componente_id is 'ID del componente tarifario para el cual se registra el valor';
+comment on column costos_componentes_periodos.costo is 'el valor del componente del servicio para el periodo indicado';
 
 
 
@@ -159,7 +205,7 @@ comment on column tarifas_componentes_periodos.tarifa is 'el valor del component
 create or replace view core.v_info_componentes as
 (
 select distinct
-    s.id servicio_id,
+    c.servicio_id,
     s.nombre servicio,
     c.id componente_id,
     c.nombre componente
@@ -167,8 +213,8 @@ from core.servicios s
     join core.componentes c on s.id = c.servicio_id
 );
 
--- Vista: v_info_tarifas_componentes
-create view core.v_info_tarifas_componentes as
+-- Vista: v_info_costos_componentes
+create view core.v_info_costos_componentes as
 (
 select
     p.id periodo_id,
@@ -177,10 +223,41 @@ select
     s.nombre servicio,
     c.id componente_id,
     c.nombre componente,
-    tcp.tarifa
+    ccp.costo
 from
-    tarifas_componentes_periodos tcp
-    join periodos p on tcp.periodo_id = p.id
-    join componentes c on tcp.componente_id = c.id
+    costos_componentes_periodos ccp
+    join periodos p on ccp.periodo_id = p.id
+    join componentes c on ccp.componente_id = c.id
     join servicios s on c.servicio_id = s.id
 );
+
+-- Vista: v_info_territorios
+create view core.v_info_territorios as
+(
+select distinct
+    m.departamento_id,
+    d.dane_id departamento_dane,
+    d.nombre departamento,
+    m.id municipio_id,
+    m.dane_id municipio_dane,
+    m.nombre municipio
+from core.departamentos d
+    join core.municipios m on d.id = m.departamento_id
+);
+
+-- Vista: v_info_consumos
+create or replace view core.v_info_consumos as (
+select distinct
+    c.periodo_id,
+    p.mes_facturacion,
+    c.servicio_id,
+    s.nombre servicio,
+    c.lectura_actual,
+    c.lectura_anterior,
+    c.constante,
+    ((c.lectura_actual-lectura_anterior)*c.constante) consumo
+from consumos c
+    join periodos p on c.periodo_id = p.id
+    join servicios s on c.servicio_id = s.id
+);
+

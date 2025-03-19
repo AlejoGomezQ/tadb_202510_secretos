@@ -10,7 +10,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models
         [JsonPropertyName("fecha_inicio")]
         public string? FechaInicio { get; set; } = null;
 
-        [JsonPropertyName(" fecha_final")]
+        [JsonPropertyName("fecha_final")]
         public string? FechaFinal { get; set; } = null;
 
         [JsonPropertyName("mes_facturacion")]

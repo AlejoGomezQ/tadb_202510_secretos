@@ -1,4 +1,5 @@
-﻿using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services;
+﻿using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Exceptions;
+using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
@@ -16,6 +17,22 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
                 .GetAllAsync();
 
             return Ok(losPeriodos);
+        }
+
+        [HttpGet("{periodo_id:int}")]
+        public async Task<IActionResult> GetByIdAsync(int periodo_id)
+        {
+            try
+            {
+                var unPeriodo = await _periodoService
+                    .GetByIdAsync(periodo_id);
+
+                return Ok(unPeriodo);
+            }
+            catch (AppValidationException error)
+            {
+                return NotFound(error.Message);
+            }
         }
     }
 }

@@ -202,7 +202,9 @@ select distinct
     c.servicio_id,
     s.nombre servicio,
     c.id componente_id,
-    c.nombre componente
+    c.nombre componente,
+    c.uuid componente_uuid,
+    s.uuid servicio_uuid
 from core.servicios s
     join core.componentes c on s.id = c.servicio_id
 );

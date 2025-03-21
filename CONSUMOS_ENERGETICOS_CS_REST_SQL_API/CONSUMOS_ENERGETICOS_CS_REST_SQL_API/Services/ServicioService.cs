@@ -25,5 +25,22 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
 
             return unServicio;
         }
+
+        public async Task<List<Componente>> GetAssociatedComponentsAsync(Guid servicio_id)
+        {
+            Servicio unServicio= await _servicioRepository
+                .GetByGuidAsync(servicio_id);
+
+            if (unServicio.Id == Guid.Empty)
+                throw new AppValidationException($"Servicio no encontrado con el id {servicio_id}");
+
+            var componentesAsociados = await _servicioRepository
+                .GetAssociatedComponentsAsync(servicio_id);
+
+            if (componentesAsociados.Count == 0)
+                throw new AppValidationException($"Servicio {unServicio.Nombre} no tiene componentes asociados");
+
+            return componentesAsociados;
+        }
     }
 }

@@ -34,5 +34,21 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
                 return NotFound(error.Message);
             }
         }
+
+        [HttpGet("{servicio_id:Guid}/Componentes")]
+        public async Task<IActionResult> GetAssociatedComponentsAsync(Guid servicio_id)
+        {
+            try
+            {
+                var losComponentesAsociados = await _servicioService
+                    .GetAssociatedComponentsAsync(servicio_id);
+
+                return Ok(losComponentesAsociados);
+            }
+            catch (AppValidationException error)
+            {
+                return NotFound(error.Message);
+            }
+        }
     }
 }

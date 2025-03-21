@@ -13,5 +13,5 @@ Por favor tenga presente:
 
 - Puede clonar el repositorio e inclusive proponer mejoras a través de issues, pero no necesariamente serán implementadas en el tiempo asignado para el curso. Siempre será un trabajo en constante modificación.
 
-## [C# - REST API](https://github.com/jdrodas/ConsumosEnergeticos/tree/main/CONSUMOS_ENERGETICOS_CS_REST_SQL_API)
+## [C# - REST API - PostgreSQL](https://github.com/jdrodas/ConsumosEnergeticos/tree/main/CONSUMOS_ENERGETICOS_CS_REST_SQL_API)
 - WebAPI en C# con framework .NET 8.x implementando **Patrón Repositorio** con capa de persistencia de datos en PostgreSQL a través de Dapper como ORM, utilizando lógica almacenada para realizar operaciones CRUD.

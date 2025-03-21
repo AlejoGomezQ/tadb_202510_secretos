@@ -26,5 +26,31 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
 
             return resultadoComponentes.ToList();
         }
+
+        public async Task<Componente> GetByGuidAsync(Guid componente_id)
+        {
+            Componente unComponente = new();
+
+            var conexion = contextoDB
+                .CreateConnection();
+
+            DynamicParameters parametrosSentencia = new();
+            parametrosSentencia.Add("@componente_id", componente_id,
+                                    DbType.Guid, ParameterDirection.Input);
+
+            string sentenciaSQL =
+                "SELECT DISTINCT componente_uuid id, componente nombre, servicio, " +
+                "servicio_uuid servicioId " +
+                "FROM core.v_info_componentes " +
+                "WHERE componente_uuid = @componente_id";
+
+            var resultado = await conexion.QueryAsync<Componente>(sentenciaSQL,
+                parametrosSentencia);
+
+            if (resultado.Any())
+                unComponente = resultado.First();
+
+            return unComponente;
+        }
     }
 }

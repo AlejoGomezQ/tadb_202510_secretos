@@ -16,7 +16,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
                 .CreateConnection();
 
             string sentenciaSQL =
-                "SELECT DISTINCT id, nombre, " +
+                "SELECT DISTINCT uuid id, nombre, " +
                 "unidad_medida unidadmedida " +
                 "FROM core.servicios ORDER BY nombre";
 
@@ -26,7 +26,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             return resultadoServicios.ToList();
         }
 
-        public async Task<Servicio> GetByIdAsync(int servicio_id)
+        public async Task<Servicio> GetByGuidAsync(Guid servicio_id)
         {
             Servicio unServicio = new();
 
@@ -35,13 +35,13 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
 
             DynamicParameters parametrosSentencia = new();
             parametrosSentencia.Add("@servicio_id", servicio_id,
-                                    DbType.Int32, ParameterDirection.Input);
+                                    DbType.Guid, ParameterDirection.Input);
 
             string sentenciaSQL =
-                "SELECT DISTINCT id, nombre, " +
+                "SELECT DISTINCT uuid id, nombre, " +
                 "unidad_medida unidadmedida " +
                 "FROM core.servicios " +
-                "WHERE id = @servicio_id";
+                "WHERE uuid = @servicio_id";
 
             var resultado = await conexion.QueryAsync<Servicio>(sentenciaSQL,
                 parametrosSentencia);

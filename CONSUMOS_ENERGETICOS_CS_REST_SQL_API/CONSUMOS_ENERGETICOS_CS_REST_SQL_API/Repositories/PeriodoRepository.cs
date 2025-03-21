@@ -16,7 +16,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
                 .CreateConnection();
 
             string sentenciaSQL =
-                "SELECT DISTINCT id, fecha_inicio," +
+                "SELECT DISTINCT uuid id, fecha_inicio," +
                 "to_char(fecha_inicio,'DD/MM/YYYY') fechaInicio, " +
                 "to_char(fecha_final,'DD/MM/YYYY') fechaFinal, " +
                 "total_dias totaldias, mes_facturacion mesFacturacion " +
@@ -28,7 +28,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             return resultadoPeriodos.ToList();
         }
 
-        public async Task<Periodo> GetByIdAsync(int periodo_id)
+        public async Task<Periodo> GetByGuidAsync(Guid periodo_id)
         {
             Periodo unPeriodo = new();
 
@@ -37,15 +37,15 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
 
             DynamicParameters parametrosSentencia = new();
             parametrosSentencia.Add("@periodo_id", periodo_id,
-                                    DbType.Int32, ParameterDirection.Input);
+                                    DbType.Guid, ParameterDirection.Input);
 
             string sentenciaSQL =
-            "SELECT DISTINCT id," +
+            "SELECT DISTINCT uuid id," +
             "to_char(fecha_inicio,'DD/MM/YYYY') fechaInicio, " +
             "to_char(fecha_final,'DD/MM/YYYY') fechaFinal, " +
             "total_dias totaldias, mes_facturacion mesFacturacion " +
             "FROM core.periodos " +
-            "WHERE id = @periodo_id ";
+            "WHERE uuid = @periodo_id ";
                 
             var resultado = await conexion.QueryAsync<Periodo>(sentenciaSQL,
                 parametrosSentencia);

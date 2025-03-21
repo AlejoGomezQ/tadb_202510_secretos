@@ -19,13 +19,13 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
             return Ok(losServicios);
         }
 
-        [HttpGet("{servicio_id:int}")]
-        public async Task<IActionResult> GetByIdAsync(int servicio_id)
+        [HttpGet("{servicio_id:Guid}")]
+        public async Task<IActionResult> GetByGuidAsync(Guid servicio_id)
         {
             try
             {
                 var unServicio = await _servicioService
-                    .GetByIdAsync(servicio_id);
+                    .GetByGuidAsync(servicio_id);
 
                 return Ok(unServicio);
             }

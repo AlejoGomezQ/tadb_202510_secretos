@@ -19,13 +19,13 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
             return Ok(losPeriodos);
         }
 
-        [HttpGet("{periodo_id:int}")]
-        public async Task<IActionResult> GetByIdAsync(int periodo_id)
+        [HttpGet("{periodo_id:Guid}")]
+        public async Task<IActionResult> GetByGuidAsync(Guid periodo_id)
         {
             try
             {
                 var unPeriodo = await _periodoService
-                    .GetByIdAsync(periodo_id);
+                    .GetByGuidAsync(periodo_id);
 
                 return Ok(unPeriodo);
             }

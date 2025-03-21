@@ -15,12 +15,12 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
             .GetAllAsync();
         }
 
-        public async Task<Servicio> GetByIdAsync(int servicio_id)
+        public async Task<Servicio> GetByGuidAsync(Guid servicio_id)
         {
             Servicio unServicio = await _servicioRepository
-                .GetByIdAsync(servicio_id);
+                .GetByGuidAsync(servicio_id);
 
-            if (unServicio.Id == 0)
+            if (unServicio.Id == Guid.Empty)
                 throw new AppValidationException($"Servicio no encontrado con el ID {servicio_id}");
 
             return unServicio;

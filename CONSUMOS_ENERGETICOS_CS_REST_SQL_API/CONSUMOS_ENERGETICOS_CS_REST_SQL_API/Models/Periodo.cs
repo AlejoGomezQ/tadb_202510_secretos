@@ -5,7 +5,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models
     public class Periodo
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; } = 0;
+        public Guid Id { get; set; } = Guid.Empty;
 
         [JsonPropertyName("fecha_inicio")]
         public string? FechaInicio { get; set; } = null;

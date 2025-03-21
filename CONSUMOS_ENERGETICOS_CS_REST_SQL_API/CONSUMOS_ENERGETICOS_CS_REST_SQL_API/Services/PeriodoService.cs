@@ -14,13 +14,13 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
                 .GetAllAsync();
         }
 
-        public async Task<Periodo> GetByIdAsync(int periodo_id)
+        public async Task<Periodo> GetByGuidAsync(Guid periodo_id)
         {
             Periodo unPeriodo = await _periodoRepository
-                .GetByIdAsync(periodo_id);
+                .GetByGuidAsync(periodo_id);
 
-            if (unPeriodo.Id == 0)
-                throw new AppValidationException($"Periodo no encontrado con el ID {periodo_id}");
+            if (unPeriodo.Id == Guid.Empty)
+                throw new AppValidationException($"Periodo no encontrado con el Guid {periodo_id}");
 
             return unPeriodo;
         }

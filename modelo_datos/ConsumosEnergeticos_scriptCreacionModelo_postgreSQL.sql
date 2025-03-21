@@ -113,20 +113,22 @@ comment on column core.municipios.departamento_id is 'id del departamento asocia
 comment on column core.municipios.dane_id is 'codigo DANE asociado al municipio';
 
 -- Tabla: Servicios
-create table servicios
+create table core.servicios
 (
     id                  int not null constraint servicios_pk primary key,
     nombre              varchar(50) not null,
     unidad_medida       varchar(10) not null
 );
 
-comment on table servicios is 'Descripcion de los servicios a monitorear';
-comment on column servicios.id is 'Id del servicio';
-comment on column servicios.nombre is 'nombre del servicio';
-comment on column servicios.unidad_medida is 'Unidad de medida del servicio';
+alter table core.servicios add column uuid uuid default gen_random_uuid();
+
+comment on table core.servicios is 'Descripcion de los servicios a monitorear';
+comment on column core.servicios.id is 'Id del servicio';
+comment on column core.servicios.nombre is 'nombre del servicio';
+comment on column core.servicios.unidad_medida is 'Unidad de medida del servicio';
 
 -- Tabla: Periodos
-create table periodos
+create table core.periodos
 (
     id                  int not null constraint periodos_pk primary key,
     fecha_inicio        date not null,
@@ -135,15 +137,17 @@ create table periodos
     mes_facturacion     varchar(20) not null
 );
 
-comment on table periodos is 'Periodos de registro de consumo del servicio';
-comment on column periodos.id is 'Id del periodo';
-comment on column periodos.fecha_inicio is 'Fecha de Inicio del periodo';
-comment on column periodos.fecha_final is 'Fecha de finalización del periodo';
-comment on column periodos.total_dias is 'Cantidad de dias incluidos en el periodo';
-comment on column periodos.mes_facturacion is 'Mes para el cual se genera la factura del periodo';
+alter table core.periodos add column uuid uuid default gen_random_uuid();
+
+comment on table core.periodos is 'Periodos de registro de consumo del servicio';
+comment on column core.periodos.id is 'Id del periodo';
+comment on column core.periodos.fecha_inicio is 'Fecha de Inicio del periodo';
+comment on column core.periodos.fecha_final is 'Fecha de finalización del periodo';
+comment on column core.periodos.total_dias is 'Cantidad de dias incluidos en el periodo';
+comment on column core.periodos.mes_facturacion is 'Mes para el cual se genera la factura del periodo';
 
 -- Tabla: consumos
-create table consumos
+create table core.consumos
 (
     periodo_id       integer not null constraint consumos_periodos_fk references periodos,
     servicio_id      integer not null constraint consumos_servicios_fk references servicios,
@@ -153,28 +157,30 @@ create table consumos
     constraint consumos_pk primary key (servicio_id, periodo_id)
 );
 
-comment on table consumos is 'Registros los consumos por servicio por periodo';
-comment on column consumos.periodo_id is 'Id del periodo para el cual se registra el consumo';
-comment on column consumos.servicio_id is 'Id del servicio para el cual se está registrando el consumo en el periodo';
-comment on column consumos.lectura_actual is 'Lectura del medidor en el periodo actual';
-comment on column consumos.lectura_anterior is 'Lectura del medidor en el periodo anterior';
-comment on column consumos.constante is 'Factor de multiplicación utilizada para el servicio durante el periodo';
+comment on table core.consumos is 'Registros los consumos por servicio por periodo';
+comment on column core.consumos.periodo_id is 'Id del periodo para el cual se registra el consumo';
+comment on column core.consumos.servicio_id is 'Id del servicio para el cual se está registrando el consumo en el periodo';
+comment on column core.consumos.lectura_actual is 'Lectura del medidor en el periodo actual';
+comment on column core.consumos.lectura_anterior is 'Lectura del medidor en el periodo anterior';
+comment on column core.consumos.constante is 'Factor de multiplicación utilizada para el servicio durante el periodo';
 
 -- Tabla de Componentes
-create table componentes
+create table core.componentes
 (
     id          integer         not null constraint componentes_pk primary key,
     nombre      varchar(100) not null,
     servicio_id integer      not null constraint componentes_servicios_fk references servicios
 );
 
-comment on table componentes is 'Componentes de la tarifa de cada uno de los servicios';
-comment on column componentes.id is 'Id del Componente tarifario';
-comment on column componentes.nombre is 'Nombre del componente tarifario';
-comment on column componentes.servicio_id is 'ID del servicio que utiliza este componente tarifario';
+alter table core.componentes add column uuid uuid default gen_random_uuid();
+
+comment on table core.componentes is 'Componentes de la tarifa de cada uno de los servicios';
+comment on column core.componentes.id is 'Id del Componente tarifario';
+comment on column core.componentes.nombre is 'Nombre del componente tarifario';
+comment on column core.componentes.servicio_id is 'ID del servicio que utiliza este componente tarifario';
 
 -- Tabla: costos_componentes_periodos
-create table costos_componentes_periodos
+create table core.costos_componentes_periodos
 (
     periodo_id    integer         not null constraint costos_componentes_periodos_componentes_periodos_periodo_fk references periodos,
     componente_id integer         not null constraint costos_componentes_periodos_componentes_periodos_componente_fk references componentes,
@@ -182,10 +188,10 @@ create table costos_componentes_periodos
     constraint costos_componentes_periodos_pk primary key (componente_id, periodo_id)
 );
 
-comment on table costos_componentes_periodos is 'Tarifas para los componentes del cargo del servicio por periodo';
-comment on column costos_componentes_periodos.periodo_id is 'ID del periodo para el cual se registra el valor del componente del servicio';
-comment on column costos_componentes_periodos.componente_id is 'ID del componente tarifario para el cual se registra el valor';
-comment on column costos_componentes_periodos.costo is 'el valor del componente del servicio para el periodo indicado';
+comment on table core.costos_componentes_periodos is 'Tarifas para los componentes del cargo del servicio por periodo';
+comment on column core.costos_componentes_periodos.periodo_id is 'ID del periodo para el cual se registra el valor del componente del servicio';
+comment on column core.costos_componentes_periodos.componente_id is 'ID del componente tarifario para el cual se registra el valor';
+comment on column core.costos_componentes_periodos.costo is 'el valor del componente del servicio para el periodo indicado';
 
 
 
@@ -213,10 +219,10 @@ select
     c.nombre componente,
     ccp.costo
 from
-    costos_componentes_periodos ccp
-    join periodos p on ccp.periodo_id = p.id
-    join componentes c on ccp.componente_id = c.id
-    join servicios s on c.servicio_id = s.id
+    core.costos_componentes_periodos ccp
+    join core.periodos p on ccp.periodo_id = p.id
+    join core.componentes c on ccp.componente_id = c.id
+    join core.servicios s on c.servicio_id = s.id
 );
 
 -- Vista: v_info_territorios
@@ -244,8 +250,8 @@ select distinct
     c.lectura_anterior,
     c.constante,
     ((c.lectura_actual-lectura_anterior)*c.constante) consumo
-from consumos c
-    join periodos p on c.periodo_id = p.id
-    join servicios s on c.servicio_id = s.id
+from core.consumos c
+    join core.periodos p on c.periodo_id = p.id
+    join core.servicios s on c.servicio_id = s.id
 );
 

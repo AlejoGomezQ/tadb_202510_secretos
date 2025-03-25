@@ -50,5 +50,9 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
                 return NotFound(error.Message);
             }
         }
+
+        //TODO: Crear el método para mapear el HTTP - POST - Servicio
+        //TODO: Crear el método para mapear el HTTP - PUT - Servicio
+        //TODO: Crear el método para mapear el HTTP - DEL - Servicio
     }
 }

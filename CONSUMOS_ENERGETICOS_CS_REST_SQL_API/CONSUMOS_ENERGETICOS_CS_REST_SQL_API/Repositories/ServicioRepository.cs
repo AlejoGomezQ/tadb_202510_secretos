@@ -78,5 +78,9 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
 
             return componentesAsociados;
         }
+
+        //TODO: Crear el método para insertar - Servicio
+        //TODO: Crear el método para actualiza - Servicio
+        //TODO: Crear el método para borrar - Servicio
     }
 }

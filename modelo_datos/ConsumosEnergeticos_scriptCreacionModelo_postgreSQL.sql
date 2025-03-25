@@ -115,7 +115,7 @@ comment on column core.municipios.dane_id is 'codigo DANE asociado al municipio'
 -- Tabla: Servicios
 create table core.servicios
 (
-    id                  int not null constraint servicios_pk primary key,
+    id                  int generated always as identity constraint servicios_pk primary key,
     nombre              varchar(50) not null,
     unidad_medida       varchar(10) not null
 );
@@ -247,6 +247,7 @@ select distinct
     c.periodo_id,
     p.mes_facturacion,
     c.servicio_id,
+    s.uuid servicio_uuid,
     s.nombre servicio,
     c.lectura_actual,
     c.lectura_anterior,

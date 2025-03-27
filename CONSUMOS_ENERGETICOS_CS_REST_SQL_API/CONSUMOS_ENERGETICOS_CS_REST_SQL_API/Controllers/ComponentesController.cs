@@ -13,10 +13,10 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var losPeriodos = await _componenteService
+            var losComponentes = await _componenteService
                 .GetAllAsync();
 
-            return Ok(losPeriodos);
+            return Ok(losComponentes);
         }
 
         [HttpGet("{componente_id:Guid}")]
@@ -35,5 +35,9 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
             }
         }
 
+        //TODO: Crear el método para mapear el HTTP - GET - Componentes por Periodo
+        //TODO: Crear el método para mapear el HTTP - POST - Componente
+        //TODO: Crear el método para mapear el HTTP - PUT - Componente
+        //TODO: Crear el método para mapear el HTTP - DEL - Componente
     }
 }

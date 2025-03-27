@@ -17,11 +17,18 @@ builder.Services.AddScoped<IPeriodoRepository, PeriodoRepository>();
 builder.Services.AddScoped<IServicioRepository, ServicioRepository>();
 builder.Services.AddScoped<IComponenteRepository, ComponenteRepository>();
 
+//TODO: Agregar referencia al repositorio ConsumoRepository
+//builder.Services.AddScoped<IConsumoRepository, ConsumoRepository>();
+
+
 //Aqui agregamos los servicios asociados para cada ruta
 builder.Services.AddScoped<ResumenService>();
 builder.Services.AddScoped<PeriodoService>();
 builder.Services.AddScoped<ServicioService>();
 builder.Services.AddScoped<ComponenteService>();
+
+//TODO: Agregar referencia al servicio ConsumoService
+//builder.Services.AddScoped<ConsumoService>();
 
 // Agregamos los servicios al contenedor de la aplicación
 builder.Services.AddControllers()

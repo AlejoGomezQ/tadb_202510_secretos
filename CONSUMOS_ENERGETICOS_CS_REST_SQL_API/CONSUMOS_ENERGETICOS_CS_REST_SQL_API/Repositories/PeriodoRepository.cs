@@ -55,5 +55,9 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
 
             return unPeriodo;
         }
+
+        //TODO: Crear el método para insertar - Periodo
+        //TODO: Crear el método para actualiza - Periodo
+        //TODO: Crear el método para borrar - Periodo
     }
 }

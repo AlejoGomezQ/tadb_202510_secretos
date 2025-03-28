@@ -1,7 +1,6 @@
 ﻿using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Exceptions;
 using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Interfaces;
 using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models;
-using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
 {
@@ -28,7 +27,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
 
         public async Task<List<Componente>> GetAssociatedComponentsAsync(Guid servicio_id)
         {
-            Servicio unServicio= await _servicioRepository
+            Servicio unServicio = await _servicioRepository
                 .GetByGuidAsync(servicio_id);
 
             if (unServicio.Id == Guid.Empty)

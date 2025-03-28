@@ -9,4 +9,4 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Exceptions
     public class AppValidationException(string message) : Exception(message)
     {
     }
-}    
+}

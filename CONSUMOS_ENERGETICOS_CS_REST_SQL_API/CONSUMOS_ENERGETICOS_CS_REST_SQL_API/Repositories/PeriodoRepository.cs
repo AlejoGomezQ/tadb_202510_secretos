@@ -46,7 +46,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             "total_dias totaldias, mes_facturacion mesFacturacion " +
             "FROM core.periodos " +
             "WHERE uuid = @periodo_id ";
-                
+
             var resultado = await conexion.QueryAsync<Periodo>(sentenciaSQL,
                 parametrosSentencia);
 

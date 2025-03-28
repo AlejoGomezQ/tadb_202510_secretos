@@ -19,7 +19,6 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
             return Ok(losConsumos);
         }
 
-        //TODO: Obtener Consumo por Guid de Periodo
         [HttpGet("Periodos/{periodo_id:Guid}")]
         public async Task<IActionResult> GetByTermGuidAsync(Guid periodo_id)
         {
@@ -36,7 +35,22 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
             }
         }
 
-        //TODO: Crear el método para mapear el HTTP - GET Consumo por Guid de Servicio
+        [HttpGet("Servicios/{servicio_id:Guid}")]
+        public async Task<IActionResult> GetByServiceGuidAsync(Guid servicio_id)
+        {
+            try
+            {
+                var losConsumosDelServicio = await _consumoService
+                    .GetByServiceGuidAsync(servicio_id);
+
+                return Ok(losConsumosDelServicio);
+            }
+            catch (AppValidationException error)
+            {
+                return NotFound(error.Message);
+            }
+        }
+
         //TODO: Crear el método para mapear el HTTP - POST - Consumo
         //TODO: Crear el método para mapear el HTTP - PUT - Consumo
         //TODO: Crear el método para mapear el HTTP - DEL - Consumo

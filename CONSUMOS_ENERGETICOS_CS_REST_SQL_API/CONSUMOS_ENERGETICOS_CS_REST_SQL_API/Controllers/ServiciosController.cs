@@ -1,4 +1,5 @@
 ﻿using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Exceptions;
+using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models;
 using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,7 +52,26 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
             }
         }
 
-        //TODO: Crear el método para mapear el HTTP - POST - Servicio
+        [HttpPost]
+        public async Task<IActionResult> CreateAsync(Servicio unServicio)
+        {
+            try
+            {
+                var servicioCreado = await _servicioService
+                    .CreateAsync(unServicio);
+
+                return Ok(servicioCreado);
+            }
+            catch (AppValidationException error)
+            {
+                return BadRequest($"Error de validación: {error.Message}");
+            }
+            catch (DbOperationException error)
+            {
+                return BadRequest($"Error de operacion en DB: {error.Message}");
+            }
+        }
+
         //TODO: Crear el método para mapear el HTTP - PUT - Servicio
         //TODO: Crear el método para mapear el HTTP - DEL - Servicio
     }

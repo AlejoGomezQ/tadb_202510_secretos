@@ -186,6 +186,41 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             }
 
             return resultadoAccion;
-        }               
+        }
+
+        public async Task<bool> RemoveAsync(Guid servicio_id)
+        {
+            bool resultadoAccion = false;
+
+            var climaExistente = await GetByGuidAsync(servicio_id);
+
+            if (climaExistente.Id == Guid.Empty)
+                throw new DbOperationException($"No se puede eliminar. No existe el servicio con el Id {servicio_id}.");
+
+            try
+            {
+                var conexion = contextoDB.CreateConnection();
+
+                string procedimiento = "core.p_elimina_servicio";
+                var parametros = new
+                {
+                    p_uuid = servicio_id
+                };
+
+                var cantidad_filas = await conexion.ExecuteAsync(
+                    procedimiento,
+                    parametros,
+                    commandType: CommandType.StoredProcedure);
+
+                if (cantidad_filas != 0)
+                    resultadoAccion = true;
+            }
+            catch (NpgsqlException error)
+            {
+                throw new DbOperationException(error.Message);
+            }
+
+            return resultadoAccion;
+        }
     }
 }

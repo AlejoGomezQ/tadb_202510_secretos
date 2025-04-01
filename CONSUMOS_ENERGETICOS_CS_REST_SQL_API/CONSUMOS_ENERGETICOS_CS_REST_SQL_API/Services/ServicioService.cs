@@ -119,7 +119,31 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
             return servicioExistente;
         }
 
-        //TODO: Crear el método para borrar - Componente
+        public async Task<string> RemoveAsync(Guid servicio_id)
+        {
+            Servicio unServicio= await _servicioRepository
+                .GetByGuidAsync(servicio_id);
+
+            if (unServicio.Id == Guid.Empty)
+                throw new AppValidationException($"Servicio no encontrado con el id {servicio_id}");
+
+            string nombreServicioEliminado = unServicio.Nombre!;
+
+            try
+            {
+                bool resultadoAccion = await _servicioRepository
+                    .RemoveAsync(servicio_id);
+
+                if (!resultadoAccion)
+                    throw new DbOperationException("Operación ejecutada pero no generó cambios en la DB");
+            }
+            catch (DbOperationException)
+            {
+                throw;
+            }
+
+            return nombreServicioEliminado;
+        }
 
         private static string EvaluateServiceDetailsAsync(Servicio unServicio)
         {

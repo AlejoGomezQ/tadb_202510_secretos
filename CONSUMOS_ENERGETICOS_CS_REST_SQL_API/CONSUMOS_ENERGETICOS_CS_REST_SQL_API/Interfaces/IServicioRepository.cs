@@ -16,5 +16,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Interfaces
         public Task<bool> CreateAsync(Servicio unServicio);
 
         public Task<bool> UpdateAsync(Servicio unServicio);
+
+        public Task<bool> RemoveAsync(Guid servicio_id);
     }
 }

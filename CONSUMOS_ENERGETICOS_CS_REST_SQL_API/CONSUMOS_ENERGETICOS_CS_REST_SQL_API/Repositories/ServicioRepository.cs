@@ -108,6 +108,42 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             return unServicio;
         }
 
+        public async Task<int> GetTotalComponentsByServiceGuidAsync(Guid servicio_id)
+        {
+            var conexion = contextoDB.CreateConnection();
+
+            DynamicParameters parametrosSentencia = new();
+            parametrosSentencia.Add("@servicio_id", servicio_id,
+                                    DbType.Guid, ParameterDirection.Input);
+
+            string sentenciaSQL = "SELECT COUNT(componente_uuid) totalRegistros " +
+                "FROM core.v_info_componentes " +
+                "WHERE servicio_uuid = @servicio_id";
+
+            var totalRegistros = await conexion
+                .QueryAsync<int>(sentenciaSQL, parametrosSentencia);
+
+            return totalRegistros.FirstOrDefault();
+        }
+
+        public async Task<int> GetTotalConsumptionByServiceGuidAsync(Guid servicio_id)
+        {
+            var conexion = contextoDB.CreateConnection();
+
+            DynamicParameters parametrosSentencia = new();
+            parametrosSentencia.Add("@servicio_id", servicio_id,
+                                    DbType.Guid, ParameterDirection.Input);
+
+            string sentenciaSQL = "SELECT COUNT(periodo_uuid) totalRegistros " +
+                "FROM core.v_info_consumos " +
+                "WHERE servicio_uuid = @servicio_id";
+
+            var totalRegistros = await conexion
+                .QueryAsync<int>(sentenciaSQL, parametrosSentencia);
+
+            return totalRegistros.FirstOrDefault();
+        }
+
         public async Task<bool> CreateAsync(Servicio unServicio)
         {
             bool resultadoAccion = false;

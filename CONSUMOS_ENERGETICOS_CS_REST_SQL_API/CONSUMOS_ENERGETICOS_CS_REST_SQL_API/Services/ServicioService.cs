@@ -127,6 +127,20 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
             if (unServicio.Id == Guid.Empty)
                 throw new AppValidationException($"Servicio no encontrado con el id {servicio_id}");
 
+            var totalComponentesPorServicio = await _servicioRepository
+                .GetTotalComponentsByServiceGuidAsync(servicio_id);
+
+            if (totalComponentesPorServicio > 0)
+                throw new AppValidationException($"No se puede eliminar {unServicio.Nombre} porque " +
+                    $"tiene {totalComponentesPorServicio} componentes asociados");
+
+            var totalConsumosPorServicio = await _servicioRepository
+                .GetTotalConsumptionByServiceGuidAsync(servicio_id);
+
+            if (totalConsumosPorServicio > 0)
+                throw new AppValidationException($"No se puede eliminar {unServicio.Nombre} porque " +
+                    $"tiene consumos en {totalConsumosPorServicio} meses de facturación");
+
             string nombreServicioEliminado = unServicio.Nombre!;
 
             try

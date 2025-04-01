@@ -129,7 +129,7 @@ $$
 
         -- Cuantos Consumos están asociados a este servicio
         select count(periodo_id) into l_total_registros
-        from v_info_consumos
+        from core.v_info_consumos
         where servicio_uuid = p_uuid;
 
         if l_total_registros != 0  then

@@ -13,6 +13,10 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Interfaces
 
         public Task<List<Componente>> GetAssociatedComponentsAsync(Guid servicio_id);
 
+        public Task<int> GetTotalComponentsByServiceGuidAsync(Guid servicio_id);
+
+        public Task<int> GetTotalConsumptionByServiceGuidAsync(Guid servicio_id);
+
         public Task<bool> CreateAsync(Servicio unServicio);
 
         public Task<bool> UpdateAsync(Servicio unServicio);

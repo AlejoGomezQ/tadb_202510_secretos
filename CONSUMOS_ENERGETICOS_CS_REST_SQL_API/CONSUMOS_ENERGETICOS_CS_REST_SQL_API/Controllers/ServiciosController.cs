@@ -53,6 +53,22 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
             }
         }
 
+        [HttpGet("{servicio_id:Guid}/Consumos")]
+        public async Task<IActionResult> GetAssociatedConsumptionAsync(Guid servicio_id)
+        {
+            try
+            {
+                var losConsumosAsociados = await _servicioService
+                    .GetAssociatedConsumptionAsync(servicio_id);
+
+                return Ok(losConsumosAsociados);
+            }
+            catch (AppValidationException error)
+            {
+                return NotFound(error.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateAsync(Servicio unServicio)
         {

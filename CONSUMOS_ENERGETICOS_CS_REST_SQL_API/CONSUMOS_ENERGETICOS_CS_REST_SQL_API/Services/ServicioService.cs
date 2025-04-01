@@ -43,6 +43,23 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
             return componentesAsociados;
         }
 
+        public async Task<List<Consumo>> GetAssociatedConsumptionAsync(Guid servicio_id)
+        {
+            Servicio unServicio = await _servicioRepository
+                .GetByGuidAsync(servicio_id);
+
+            if (unServicio.Id == Guid.Empty)
+                throw new AppValidationException($"Servicio no encontrado con el id {servicio_id}");
+
+            var consumosAsociados = await _servicioRepository
+                .GetAssociatedConsumptionAsync(servicio_id);
+
+            if (consumosAsociados.Count == 0)
+                throw new AppValidationException($"Servicio {unServicio.Nombre} no tiene consumos asociados");
+
+            return consumosAsociados;
+        }
+
         public async Task<Servicio> CreateAsync(Servicio unServicio)
         {
             string resultadoValidacion = EvaluateServiceDetailsAsync(unServicio);

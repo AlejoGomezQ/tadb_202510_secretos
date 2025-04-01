@@ -2,6 +2,7 @@
 using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models;
 using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
 {
@@ -72,7 +73,26 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
             }
         }
 
-        //TODO: Crear el método para mapear el HTTP - PUT - Servicio
+        [HttpPut]
+        public async Task<IActionResult> UpdateAsync(Servicio unServicio)
+        {
+            try
+            {
+                var servicioActualizado = await _servicioService
+                    .UpdateAsync(unServicio);
+
+                return Ok(servicioActualizado);
+            }
+            catch (AppValidationException error)
+            {
+                return BadRequest($"Error de validación: {error.Message}");
+            }
+            catch (DbOperationException error)
+            {
+                return BadRequest($"Error de operacion en DB: {error.Message}");
+            }
+        }
+
         //TODO: Crear el método para mapear el HTTP - DEL - Servicio
     }
 }

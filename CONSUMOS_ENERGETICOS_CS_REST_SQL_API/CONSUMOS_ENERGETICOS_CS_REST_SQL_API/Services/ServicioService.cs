@@ -82,9 +82,44 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
             return servicioExistente;
         }
 
-        //TODO: Crear el método para actualiza - Servicio
-        //TODO: Crear el método para borrar - Servicio
+        public async Task<Servicio> UpdateAsync(Servicio unServicio)
+        {
+            string resultadoValidacion = EvaluateServiceDetailsAsync(unServicio);
 
+            if (!string.IsNullOrEmpty(resultadoValidacion))
+                throw new AppValidationException(resultadoValidacion);
+
+            //Primero, validamos si existe un servicio con ese Guid
+            var servicioExistente = await _servicioRepository
+                .GetByGuidAsync(unServicio.Id);
+
+            if (servicioExistente.Id == Guid.Empty)
+                throw new AppValidationException($"No existe un servicio con el Guid {unServicio.Id} que se pueda actualizar");
+
+            //Si existe y los datos son iguales, se retorna el objeto para garantizar idempotencia
+            if (servicioExistente.Equals(unServicio))
+                return servicioExistente;
+
+            try
+            {
+                bool resultadoAccion = await _servicioRepository
+                    .UpdateAsync(unServicio);
+
+                if (!resultadoAccion)
+                    throw new AppValidationException("Operación ejecutada pero no generó cambios en la DB");
+
+                servicioExistente = await _servicioRepository
+                    .GetByGuidAsync(unServicio.Id);
+            }
+            catch (DbOperationException)
+            {
+                throw;
+            }
+
+            return servicioExistente;
+        }
+
+        //TODO: Crear el método para borrar - Componente
 
         private static string EvaluateServiceDetailsAsync(Servicio unServicio)
         {

@@ -15,8 +15,6 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Interfaces
 
         public Task<bool> CreateAsync(Servicio unServicio);
 
-
-        //TODO: Crear el método para actualiza - Servicio
-        //TODO: Crear el método para borrar - Servicio
+        public Task<bool> UpdateAsync(Servicio unServicio);
     }
 }

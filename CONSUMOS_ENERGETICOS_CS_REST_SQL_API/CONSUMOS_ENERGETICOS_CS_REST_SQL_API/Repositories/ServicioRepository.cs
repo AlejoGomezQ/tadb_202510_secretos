@@ -5,6 +5,7 @@ using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models;
 using Dapper;
 using Npgsql;
 using System.Data;
+using System.Security.Claims;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
 {
@@ -150,7 +151,41 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             return resultadoAccion;
         }
 
-        //TODO: Crear el método para actualiza - Servicio
-        //TODO: Crear el método para borrar - Servicio
+        public async Task<bool> UpdateAsync(Servicio unServicio)
+        {
+            bool resultadoAccion = false;
+
+            var servicioExistente = await GetByGuidAsync(unServicio.Id);
+
+            if (servicioExistente.Id == Guid.Empty)
+                throw new DbOperationException($"No se puede actualizar. No existe un servicio con Guid {unServicio.Id}.");
+
+            try
+            {
+                var conexion = contextoDB.CreateConnection();
+
+                string procedimiento = "core.p_actualiza_servicio";
+                var parametros = new
+                {
+                    p_uuid = unServicio.Id,
+                    p_nombre = unServicio.Nombre,
+                    p_unidad_medida = unServicio.UnidadMedida
+                };
+
+                var cantidad_filas = await conexion.ExecuteAsync(
+                    procedimiento,
+                    parametros,
+                    commandType: CommandType.StoredProcedure);
+
+                if (cantidad_filas != 0)
+                    resultadoAccion = true;
+            }
+            catch (NpgsqlException error)
+            {
+                throw new DbOperationException(error.Message);
+            }
+
+            return resultadoAccion;
+        }               
     }
 }

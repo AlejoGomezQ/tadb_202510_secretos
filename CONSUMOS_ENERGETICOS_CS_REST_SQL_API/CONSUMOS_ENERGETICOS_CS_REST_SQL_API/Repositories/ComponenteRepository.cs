@@ -24,7 +24,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             var resultadoComponentes = await conexion
                 .QueryAsync<Componente>(sentenciaSQL, new DynamicParameters());
 
-            return resultadoComponentes.ToList();
+            return [.. resultadoComponentes];
         }
 
         public async Task<Componente> GetByGuidAsync(Guid componente_id)
@@ -53,6 +53,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             return unComponente;
         }
 
+        //TODO: Crear el método para obtener - Componentes por Periodo
         //TODO: Crear el método para insertar - Componente
         //TODO: Crear el método para actualiza - Componente
         //TODO: Crear el método para borrar - Componente

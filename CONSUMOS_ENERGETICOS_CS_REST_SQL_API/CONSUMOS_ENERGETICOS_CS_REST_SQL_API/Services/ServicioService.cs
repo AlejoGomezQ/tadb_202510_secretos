@@ -1,7 +1,6 @@
 ﻿using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Exceptions;
 using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Interfaces;
 using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models;
-using System.Security.Claims;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
 {
@@ -72,12 +71,12 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
                 .GetByNameAsync(unServicio.Nombre!);
 
             // Si existe, pero con otra unidad de medida, no se puede insertar
-            if(servicioExistente.Id != Guid.Empty && servicioExistente.UnidadMedida != unServicio.UnidadMedida)
+            if (servicioExistente.Id != Guid.Empty && servicioExistente.UnidadMedida != unServicio.UnidadMedida)
                 throw new AppValidationException($"Ya existe un servicio {unServicio.Nombre} " +
                     $"pero con unidad de medida {servicioExistente.UnidadMedida}");
 
             //Si existe y los datos son iguales, se retorna el objeto para garantizar idempotencia
-            if (servicioExistente.Nombre ==  unServicio.Nombre && servicioExistente.UnidadMedida == unServicio.UnidadMedida)
+            if (servicioExistente.Nombre == unServicio.Nombre && servicioExistente.UnidadMedida == unServicio.UnidadMedida)
                 return servicioExistente;
 
             try
@@ -138,7 +137,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
 
         public async Task<string> RemoveAsync(Guid servicio_id)
         {
-            Servicio unServicio= await _servicioRepository
+            Servicio unServicio = await _servicioRepository
                 .GetByGuidAsync(servicio_id);
 
             if (unServicio.Id == Guid.Empty)

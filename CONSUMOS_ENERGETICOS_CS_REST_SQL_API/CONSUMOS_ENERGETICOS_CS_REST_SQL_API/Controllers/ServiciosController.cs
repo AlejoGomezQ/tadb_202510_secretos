@@ -2,7 +2,6 @@
 using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models;
 using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
 {

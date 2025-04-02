@@ -25,7 +25,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             var resultadoPeriodos = await conexion
                 .QueryAsync<Periodo>(sentenciaSQL, new DynamicParameters());
 
-            return resultadoPeriodos.ToList();
+            return [.. resultadoPeriodos];
         }
 
         public async Task<Periodo> GetByGuidAsync(Guid periodo_id)
@@ -78,7 +78,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
                 .QueryAsync<Consumo>(sentenciaSQL,
                                     parametrosSentencia);
 
-            return resultadoConsumos.ToList();
+            return [.. resultadoConsumos];
         }
 
         //TODO: Crear el método para insertar - Periodo

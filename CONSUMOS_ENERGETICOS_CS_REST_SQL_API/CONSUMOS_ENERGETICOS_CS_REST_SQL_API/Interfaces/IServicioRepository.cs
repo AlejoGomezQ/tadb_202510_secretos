@@ -1,5 +1,4 @@
 ﻿using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models;
-using System.Security.Claims;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Interfaces
 {

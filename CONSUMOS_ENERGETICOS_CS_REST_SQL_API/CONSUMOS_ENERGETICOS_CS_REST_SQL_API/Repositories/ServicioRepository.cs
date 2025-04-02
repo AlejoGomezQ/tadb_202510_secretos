@@ -5,7 +5,7 @@ using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models;
 using Dapper;
 using Npgsql;
 using System.Data;
-using System.Security.Claims;
+
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
 {
@@ -26,7 +26,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             var resultadoServicios = await conexion
                 .QueryAsync<Servicio>(sentenciaSQL, new DynamicParameters());
 
-            return resultadoServicios.ToList();
+            return [.. resultadoServicios];
         }
 
         public async Task<Servicio> GetByGuidAsync(Guid servicio_id)
@@ -77,7 +77,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
                 .QueryAsync<Componente>(sentenciaSQL, parametrosSentencia);
 
             if (resultado.Any())
-                componentesAsociados = resultado.ToList();
+                componentesAsociados = [.. resultado];
 
             return componentesAsociados;
         }
@@ -106,7 +106,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
                 .QueryAsync<Consumo>(sentenciaSQL, parametrosSentencia);
 
             if (resultado.Any())
-                consumosAsociados = resultado.ToList();
+                consumosAsociados = [.. resultado];
 
             return consumosAsociados;
         }
@@ -150,9 +150,9 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
                 "WHERE servicio_uuid = @servicio_id";
 
             var totalRegistros = await conexion
-                .QueryAsync<int>(sentenciaSQL, parametrosSentencia);
+                .QueryFirstAsync<int>(sentenciaSQL, parametrosSentencia);
 
-            return totalRegistros.FirstOrDefault();
+            return totalRegistros;
         }
 
         public async Task<int> GetTotalConsumptionByServiceGuidAsync(Guid servicio_id)
@@ -168,26 +168,14 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
                 "WHERE servicio_uuid = @servicio_id";
 
             var totalRegistros = await conexion
-                .QueryAsync<int>(sentenciaSQL, parametrosSentencia);
+                .QueryFirstAsync<int>(sentenciaSQL, parametrosSentencia);
 
-            return totalRegistros.FirstOrDefault();
+            return totalRegistros;
         }
 
         public async Task<bool> CreateAsync(Servicio unServicio)
         {
             bool resultadoAccion = false;
-
-            //Validamos primero si existe con ese nombre y con otra unidad de medida
-            var servicioExistente = await GetByNameAsync(unServicio.Nombre!);
-
-            // Si existe, pero con otra unidad de medida, no se puede insertar
-            if (servicioExistente.Id != Guid.Empty && servicioExistente.UnidadMedida != unServicio.UnidadMedida)
-                throw new AppValidationException($"Ya existe un servicio {unServicio.Nombre} " +
-                    $"pero con unidad de medida {servicioExistente.UnidadMedida}");
-
-            //Si existe y los datos son iguales, se retorna el objeto para garantizar idempotencia
-            if (servicioExistente.Nombre == unServicio.Nombre && servicioExistente.UnidadMedida == unServicio.UnidadMedida)
-                return true;
 
             try
             {
@@ -220,11 +208,6 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
         {
             bool resultadoAccion = false;
 
-            var servicioExistente = await GetByGuidAsync(unServicio.Id);
-
-            if (servicioExistente.Id == Guid.Empty)
-                throw new DbOperationException($"No se puede actualizar. No existe un servicio con Guid {unServicio.Id}.");
-
             try
             {
                 var conexion = contextoDB.CreateConnection();
@@ -256,11 +239,6 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
         public async Task<bool> RemoveAsync(Guid servicio_id)
         {
             bool resultadoAccion = false;
-
-            var climaExistente = await GetByGuidAsync(servicio_id);
-
-            if (climaExistente.Id == Guid.Empty)
-                throw new DbOperationException($"No se puede eliminar. No existe el servicio con el Id {servicio_id}.");
 
             try
             {

@@ -51,7 +51,6 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
             }
         }
 
-        //TODO: Crear el método para mapear el HTTP - GET - Consumos por Periodo
         //TODO: Crear el método para mapear el HTTP - POST - Periodo
         //TODO: Crear el método para mapear el HTTP - PUT - Periodo
         //TODO: Crear el método para mapear el HTTP - DEL - Periodo

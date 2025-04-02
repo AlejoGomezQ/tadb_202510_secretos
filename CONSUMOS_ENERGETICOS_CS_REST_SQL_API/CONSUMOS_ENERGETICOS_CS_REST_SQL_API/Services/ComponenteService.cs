@@ -25,6 +25,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services
             return unComponente;
         }
 
+        //TODO: Crear el método para obtener - Componentes por Periodo
         //TODO: Crear el método para insertar - Componente
         //TODO: Crear el método para actualiza - Componente
         //TODO: Crear el método para borrar - Componente

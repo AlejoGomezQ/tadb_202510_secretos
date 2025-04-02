@@ -26,7 +26,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             var resultadoConsumos = await conexion
                 .QueryAsync<Consumo>(sentenciaSQL, new DynamicParameters());
 
-            return resultadoConsumos.ToList();
+            return [.. resultadoConsumos];
         }
 
         public async Task<List<Consumo>> GetByTermGuidAsync(Guid periodo_id)
@@ -51,7 +51,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
                 .QueryAsync<Consumo>(sentenciaSQL,
                                     parametrosSentencia);
 
-            return resultadoConsumos.ToList();
+            return [.. resultadoConsumos];
         }
 
         public async Task<List<Consumo>> GetByServiceGuidAsync(Guid servicio_id)
@@ -76,7 +76,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
                 .QueryAsync<Consumo>(sentenciaSQL,
                                     parametrosSentencia);
 
-            return resultadoConsumos.ToList();
+            return [.. resultadoConsumos];
         }
         //TODO: Crear el método para insertar - Consumo
         //TODO: Crear el método para actualiza - Consumo

@@ -147,4 +147,141 @@ $$;
 
 -- ### Componentes ####
 
+-- p_inserta_componente
+create or replace procedure core.p_inserta_componente(
+                            in p_nombre         text,
+                            in p_servicio       text)
+    language plpgsql as
+$$
+    declare
+        l_total_registros   integer;
+        l_servicio_id       integer :=0;
+
+    begin
+        if p_nombre is null or
+           p_servicio is null or
+           length(p_nombre) = 0 or
+           length(p_servicio) = 0 then
+               raise exception 'El nombre del componente o su servicio no pueden ser nulos';
+        end if;
+
+        -- Validación de cantidad de registros con ese nombre y servicio
+        select count(componente_id) into l_total_registros
+        from core.v_info_componentes
+        where lower(componente) = lower(p_nombre)
+        and lower(servicio) = lower(p_servicio);
+
+        if l_total_registros != 0  then
+            raise exception 'ya existe ese componente asociado a ese servicio';
+        end if; 
+
+        -- Validación de servicio existente
+        select count(id) into l_total_registros
+        from core.servicios 
+        where lower(nombre) = lower(p_servicio);    
+
+        if l_total_registros == 0  then
+            raise exception 'No existe servicio con ese nombre';
+        end if; 
+
+        -- Obtenemos el id del servicio
+        select id into l_servicio_id
+        from core.servicios
+        where lower(nombre) = lower(p_servicio);    
+
+        insert into core.componentes (nombre, servicio_id)
+        values (initcap(p_nombre),l_servicio_id);
+    end;
+$$;
+
+-- p_actualiza_componente
+create or replace procedure core.p_actualiza_componente(
+                            in p_uuid               uuid,
+                            in p_nombre             text,
+                            in p_servicio           text)
+    language plpgsql as
+$$
+    declare
+        l_total_registros   integer;
+        l_servicio_id       integer :=0;
+
+    begin
+        select count(id) into l_total_registros
+        from core.componentes
+        where uuid = p_uuid;
+
+        if l_total_registros = 0  then
+            raise exception 'No existe un componente registrado con ese Guid';
+        end if;
+
+        if p_nombre is null or
+           p_servicio is null or
+           length(p_nombre) = 0 or
+           length(p_servicio) = 0 then
+               raise exception 'El nombre del componente o su servicio no pueden ser nulos';
+        end if;
+
+        -- Validación de cantidad de registros con ese nombre y servicio
+        select count(componente_id) into l_total_registros
+        from core.v_info_componentes
+        where lower(componente) = lower(p_nombre)
+        and lower(servicio) = lower(p_servicio);
+
+        if l_total_registros != 0  then
+            raise exception 'ya existe ese componente asociado a ese servicio';
+        end if;
+        
+        -- Validación de servicio existente
+        select count(id) into l_total_registros
+        from core.servicios 
+        where lower(nombre) = lower(p_servicio);    
+
+        if l_total_registros == 0  then
+            raise exception 'No existe servicio con ese nombre';
+        end if; 
+
+        -- Obtenemos el id del servicio
+        select id into l_servicio_id
+        from core.servicios
+        where lower(nombre) = lower(p_servicio);          
+
+
+        update core.componentes
+        set nombre = initcap(p_nombre), servicio_id = l_servicio_id
+        where uuid = p_uuid;
+    end;
+$$;
+
+-- p_elimina_componente
+create or replace procedure core.p_elimina_componente(
+                            in p_uuid           uuid)
+    language plpgsql as
+$$
+    declare
+        l_total_registros integer;
+
+    begin
+        select count(id) into l_total_registros
+        from core.componentes
+        where uuid = p_uuid;
+
+        if l_total_registros = 0  then
+            raise exception 'No existe un componente registrado con ese Guid';
+        end if;
+
+        -- Cuantos costos asociados al componente están registrados
+        select count(componente_id) into l_total_registros
+        from core.v_info_costos_componentes
+        where componente_uuid = p_uuid;
+
+        if l_total_registros != 0  then
+            raise exception 'No se puede eliminar, hay costos asociados a este componente para varios períodos.';
+        end if;
+
+        delete from core.componentes
+        where uuid = p_uuid;
+
+    end;
+$$;
+
 -- ### Consumos ####

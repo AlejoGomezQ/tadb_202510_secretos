@@ -167,9 +167,9 @@ comment on column core.consumos.constante is 'Factor de multiplicación utilizad
 -- Tabla de Componentes
 create table core.componentes
 (
-    id          integer         not null constraint componentes_pk primary key,
-    nombre      varchar(100) not null,
-    servicio_id integer      not null constraint componentes_servicios_fk references servicios
+    id                  int generated always as identity constraint componentes_pk primary key,    
+    nombre              varchar(100) not null,
+    servicio_id         integer      not null constraint componentes_servicios_fk references servicios
 );
 
 alter table core.componentes add column uuid uuid default gen_random_uuid();
@@ -200,11 +200,11 @@ create or replace view core.v_info_componentes as
 (
 select distinct
     c.servicio_id,
+    s.uuid servicio_uuid,
     s.nombre servicio,
     c.id componente_id,
-    c.nombre componente,
     c.uuid componente_uuid,
-    s.uuid servicio_uuid
+    c.nombre componente
 from core.servicios s
     join core.componentes c on s.id = c.servicio_id
 );
@@ -214,10 +214,13 @@ create view core.v_info_costos_componentes as
 (
 select
     p.id periodo_id,
+    p.uuid periodo_uuid,
     p.mes_facturacion,
-    s.id servicio_id,
+    c.servicio_id,
+    s.uuid servicio_uuid,
     s.nombre servicio,
-    c.id componente_id,
+    ccp.componente_id,
+    c.uuid componente_uuid,
     c.nombre componente,
     ccp.costo
 from

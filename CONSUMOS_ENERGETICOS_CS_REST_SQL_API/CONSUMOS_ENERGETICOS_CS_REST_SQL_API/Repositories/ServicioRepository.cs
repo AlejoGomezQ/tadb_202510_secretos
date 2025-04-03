@@ -55,6 +55,35 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             return unServicio;
         }
 
+        public async Task<Componente> GetByNameAndServiceAsync(string componente_nombre, string componente_servicio)
+        {
+            Componente unComponente = new();
+
+            var conexion = contextoDB
+                .CreateConnection();
+
+            DynamicParameters parametrosSentencia = new();
+            parametrosSentencia.Add("@componente_nombre", componente_nombre,
+                                    DbType.String, ParameterDirection.Input);
+            parametrosSentencia.Add("@componente_servicio", componente_servicio,
+                                    DbType.String, ParameterDirection.Input);
+
+            string sentenciaSQL =
+                "SELECT DISTINCT componente_uuid id, componente nombre, servicio, " +
+                "servicio_uuid servicioId " +
+                "FROM core.v_info_componentes " +
+                "WHERE componente = @componente_nombre " +
+                "AND servicio = @componente_servicio";
+
+            var resultado = await conexion.QueryAsync<Componente>(sentenciaSQL,
+                parametrosSentencia);
+
+            if (resultado.Any())
+                unComponente = resultado.First();
+
+            return unComponente;
+        }
+
         public async Task<List<Componente>> GetAssociatedComponentsAsync(Guid servicio_id)
         {
             List<Componente> componentesAsociados = [];

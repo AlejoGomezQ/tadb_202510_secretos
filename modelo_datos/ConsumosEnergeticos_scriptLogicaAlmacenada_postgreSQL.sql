@@ -180,7 +180,7 @@ $$
         from core.servicios 
         where lower(nombre) = lower(p_servicio);    
 
-        if l_total_registros == 0  then
+        if l_total_registros = 0  then
             raise exception 'No existe servicio con ese nombre';
         end if; 
 
@@ -236,7 +236,7 @@ $$
         from core.servicios 
         where lower(nombre) = lower(p_servicio);    
 
-        if l_total_registros == 0  then
+        if l_total_registros = 0  then
             raise exception 'No existe servicio con ese nombre';
         end if; 
 

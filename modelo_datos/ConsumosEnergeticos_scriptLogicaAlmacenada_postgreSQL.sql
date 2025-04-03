@@ -7,6 +7,29 @@
 
 -- Con el usuario servicios_app
 
+
+-- ****************************************
+-- Creación de funciones
+-- ****************************************
+
+create or replace function core.f_obtiene_intervalo_fechas(
+                                                        p_fecha_inicio date,
+                                                        p_fecha_final date)
+    returns int as
+$$
+    declare
+        l_total_dias int :=0;
+
+    begin
+        select
+            date_part('month',age(p_fecha_final, p_fecha_inicio)) * 30 +
+            date_part('day',age(p_fecha_final,p_fecha_inicio))
+        into l_total_dias;
+
+        return l_total_dias;
+    end;
+$$ language plpgsql;
+
 -- ****************************************
 -- Creación de procedimientos
 -- ****************************************
@@ -144,6 +167,187 @@ $$;
 
 
 -- ### Periodos ####
+
+-- p_inserta_periodo
+create or replace procedure core.p_inserta_periodo(
+                            in p_fecha_inicial      text,
+                            in p_fecha_final        text,
+                            in p_total_dias         int,
+                            in p_mes_facturacion    text)
+    language plpgsql as
+$$
+    declare
+        l_total_registros   integer;
+        l_total_dias        integer;
+    begin
+        if p_fecha_inicial is null or
+           p_fecha_final is null or
+           p_mes_facturacion is null or
+           length(p_fecha_inicial) = 0 or
+           length(p_fecha_final) = 0 or
+           length(p_mes_facturacion) = 0 then
+               raise exception 'El mes de facturación o las fechas del periodo no pueden ser datos nulos';
+        end if;
+
+        -- Validación de cantidad de registros con esa fecha inicial y final
+        select count(id) into l_total_registros
+        from core.periodos
+        where fecha_inicio = to_date(p_fecha_inicial,'DD/MM/YYYY')
+        and fecha_final = to_date(p_fecha_final,'DD/MM/YYYY');
+
+        if l_total_registros != 0  then
+            raise exception 'ya existe ese periodo asociado a esas fechas de inicio y final';
+        end if;
+
+        -- Validación de unicidad de la especificación del mes de facturación
+        select count(id) into l_total_registros
+        from core.periodos
+        where lower(mes_facturacion) = lower(p_mes_facturacion);
+
+        if l_total_registros != 0  then
+            raise exception 'ya existe ese periodo asociado a ese mes de facturación';
+        end if;        
+        
+        -- Validacion de que las fechas formen un intervalo
+        if p_fecha_inicial > p_fecha_final then
+            raise exception 'Las fechas indicadas no definen un intervalo';
+        end if;
+        
+        -- Verificacion duracion en dias
+        l_total_dias := core.f_obtiene_intervalo_fechas(
+                to_date(p_fecha_inicial,'DD/MM/YYYY'),
+                to_date(p_fecha_final,'DD/MM/YYYY'));
+        
+        if l_total_dias = p_total_dias then
+            l_total_dias := p_total_dias;
+        end if;
+            
+    insert into core.periodos(
+        fecha_inicio, 
+        fecha_final, 
+        total_dias, 
+        mes_facturacion)
+    values (
+        to_date(p_fecha_inicial,'DD/MM/YYYY'),
+        to_date(p_fecha_final,'DD/MM/YYYY'),
+        l_total_dias, 
+        p_mes_facturacion);
+
+    end;
+$$;
+
+-- p_actualiza_periodo
+create or replace procedure core.p_actualiza_periodo(
+                            in p_uuid               uuid,
+                            in p_fecha_inicial      text,
+                            in p_fecha_final        text,
+                            in p_total_dias         int,
+                            in p_mes_facturacion    text)
+    language plpgsql as
+$$
+    declare
+        l_total_registros   integer;
+        l_total_dias        integer;
+    begin
+        select count(id) into l_total_registros
+        from core.periodos
+        where uuid = p_uuid;
+
+        if l_total_registros = 0  then
+            raise exception 'No existe un periodo registrado con ese Guid';
+        end if;
+
+        if p_fecha_inicial is null or
+           p_fecha_final is null or
+           p_mes_facturacion is null or
+           length(p_fecha_inicial) = 0 or
+           length(p_fecha_final) = 0 or
+           length(p_mes_facturacion) = 0 then
+               raise exception 'El mes de facturación o las fechas del periodo no pueden ser datos nulos';
+        end if;
+
+        -- Validación de cantidad de registros con esa fecha inicial y final
+        select count(id) into l_total_registros
+        from core.periodos
+        where fecha_inicio = to_date(p_fecha_inicial,'DD/MM/YYYY')
+        and fecha_final = to_date(p_fecha_final,'DD/MM/YYYY');
+
+        if l_total_registros != 0  then
+            raise exception 'ya existe ese periodo asociado a esas fechas de inicio y final';
+        end if;
+
+        -- Validación de unicidad de la especificación del mes de facturación
+        select count(id) into l_total_registros
+        from core.periodos
+        where lower(mes_facturacion) = lower(p_mes_facturacion)
+        and uuid != p_uuid;
+
+        if l_total_registros != 0  then
+            raise exception 'ya existe ese periodo asociado a ese mes de facturación';
+        end if;
+
+        -- Validacion de que las fechas formen un intervalo
+        if p_fecha_inicial > p_fecha_final then
+            raise exception 'Las fechas indicadas no definen un intervalo';
+        end if;
+
+        -- Verificacion duracion en dias
+        l_total_dias := core.f_obtiene_intervalo_fechas(
+                to_date(p_fecha_inicial,'DD/MM/YYYY'),
+                to_date(p_fecha_final,'DD/MM/YYYY'));
+
+        if l_total_dias = p_total_dias then
+            l_total_dias := p_total_dias;
+        end if;
+
+    update core.periodos set
+        fecha_inicio = to_date(p_fecha_inicial,'DD/MM/YYYY'),
+        fecha_final = to_date(p_fecha_final,'DD/MM/YYYY'),
+        total_dias = l_total_dias,
+        mes_facturacion = initcap(p_mes_facturacion)
+    where uuid = p_uuid;
+
+    end;
+$$;
+
+create or replace procedure core.p_elimina_periodo(
+                            in p_uuid           uuid)
+    language plpgsql as
+$$
+    declare
+        l_total_registros integer;
+
+    begin
+        select count(id) into l_total_registros
+        from core.periodos
+        where uuid = p_uuid;
+
+        if l_total_registros = 0  then
+            raise exception 'No existe un periodo registrado con ese Guid';
+        end if;
+
+        -- Cuantos costos asociados al componente están registrados
+        select count(periodo_id) into l_total_registros
+        from core.v_info_costos_componentes
+        where periodo_uuid = p_uuid;
+
+        if l_total_registros != 0  then
+            raise exception 'No se puede eliminar, hay costos asociados a este periodo.';
+        end if;
+
+        -- Cuantos consumos están asociados al periodo
+        select count(periodo_id) into l_total_registros
+        from core.v_info_consumos
+        where periodo_uuid = p_uuid;
+
+        if l_total_registros != 0  then
+            raise exception 'No se puede eliminar, hay consumos asociados a este periodo.';
+        end if;
+
+        delete from core.periodos
+        where uuid = p_uuid;
+    end;
+$$;
 
 -- ### Componentes ####
 

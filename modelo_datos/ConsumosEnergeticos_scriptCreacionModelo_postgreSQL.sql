@@ -138,6 +138,7 @@ create table core.periodos
 );
 
 alter table core.periodos add column uuid uuid default gen_random_uuid();
+alter table core.periodos add constraint periodos_mes_facturacion_uk unique (mes_facturacion);
 
 comment on table core.periodos is 'Periodos de registro de consumo del servicio';
 comment on column core.periodos.id is 'Id del periodo';
@@ -182,8 +183,8 @@ comment on column core.componentes.servicio_id is 'ID del servicio que utiliza e
 -- Tabla: costos_componentes_periodos
 create table core.costos_componentes_periodos
 (
-    periodo_id    integer         not null constraint costos_componentes_periodos_componentes_periodos_periodo_fk references periodos,
-    componente_id integer         not null constraint costos_componentes_periodos_componentes_periodos_componente_fk references componentes,
+    periodo_id    integer         not null constraint costos_componentes_periodos_periodo_fk references periodos,
+    componente_id integer         not null constraint costos_componentes_periodos_componente_fk references componentes,
     costo        float not null,
     constraint costos_componentes_periodos_pk primary key (componente_id, periodo_id)
 );
@@ -248,6 +249,7 @@ from core.departamentos d
 create or replace view core.v_info_consumos as (
 select distinct
     c.periodo_id,
+    p.uuid periodo_uuid,
     p.mes_facturacion,
     c.servicio_id,
     s.uuid servicio_uuid,
@@ -255,7 +257,7 @@ select distinct
     c.lectura_actual,
     c.lectura_anterior,
     c.constante,
-    ((c.lectura_actual-lectura_anterior)*c.constante) consumo
+    ((c.lectura_actual-lectura_anterior)*c.constante) valor
 from core.consumos c
     join core.periodos p on c.periodo_id = p.id
     join core.servicios s on c.servicio_id = s.id

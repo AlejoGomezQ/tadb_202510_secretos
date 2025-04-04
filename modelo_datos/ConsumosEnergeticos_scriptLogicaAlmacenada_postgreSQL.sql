@@ -206,33 +206,31 @@ $$
 
         if l_total_registros != 0  then
             raise exception 'ya existe ese periodo asociado a ese mes de facturación';
-        end if;        
-        
+        end if;
+
         -- Validacion de que las fechas formen un intervalo
-        if p_fecha_inicial > p_fecha_final then
+        if to_date(p_fecha_inicial,'DD/MM/YYYY') > to_date(p_fecha_final,'DD/MM/YYYY') then
             raise exception 'Las fechas indicadas no definen un intervalo';
         end if;
-        
+
         -- Verificacion duracion en dias
-        l_total_dias := core.f_obtiene_intervalo_fechas(
-                to_date(p_fecha_inicial,'DD/MM/YYYY'),
-                to_date(p_fecha_final,'DD/MM/YYYY'));
-        
+        l_total_dias := to_date(p_fecha_final,'DD/MM/YYYY') -
+                         to_date(p_fecha_inicial,'DD/MM/YYYY');
+
         if l_total_dias = p_total_dias then
             l_total_dias := p_total_dias;
         end if;
-            
+
     insert into core.periodos(
-        fecha_inicio, 
-        fecha_final, 
-        total_dias, 
+        fecha_inicio,
+        fecha_final,
+        total_dias,
         mes_facturacion)
     values (
         to_date(p_fecha_inicial,'DD/MM/YYYY'),
         to_date(p_fecha_final,'DD/MM/YYYY'),
-        l_total_dias, 
-        p_mes_facturacion);
-
+        l_total_dias,
+        initcap(p_mes_facturacion));
     end;
 $$;
 
@@ -287,14 +285,13 @@ $$
         end if;
 
         -- Validacion de que las fechas formen un intervalo
-        if p_fecha_inicial > p_fecha_final then
+        if to_date(p_fecha_inicial,'DD/MM/YYYY') > to_date(p_fecha_final,'DD/MM/YYYY') then
             raise exception 'Las fechas indicadas no definen un intervalo';
         end if;
 
         -- Verificacion duracion en dias
-        l_total_dias := core.f_obtiene_intervalo_fechas(
-                to_date(p_fecha_inicial,'DD/MM/YYYY'),
-                to_date(p_fecha_final,'DD/MM/YYYY'));
+        l_total_dias := to_date(p_fecha_final,'DD/MM/YYYY') -
+                         to_date(p_fecha_inicial,'DD/MM/YYYY');
 
         if l_total_dias = p_total_dias then
             l_total_dias := p_total_dias;

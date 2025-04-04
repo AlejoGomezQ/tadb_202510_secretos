@@ -8,10 +8,18 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Interfaces
 
         public Task<Periodo> GetByGuidAsync(Guid periodo_id);
 
+        public Task<Periodo> GetByDatesAndBillingMonthAsync(Periodo unPeriodo);
+
         public Task<List<Consumo>> GetAssociatedConsumptionAsync(Guid periodo_id);
 
-        //TODO: Crear el método para insertar - Periodo
-        //TODO: Crear el método para actualiza - Periodo
-        //TODO: Crear el método para borrar - Periodo
+        public Task<int> GetTotalComponentCostsByTermGuidAsync(Guid periodo_id);
+
+        public Task<int> GetTotalConsumptionByTermGuidAsync(Guid periodo_id);
+
+        public Task<bool> CreateAsync(Periodo unPeriodo);
+
+        public Task<bool> UpdateAsync(Periodo unPeriodo);
+
+        public Task<bool> RemoveAsync(Guid periodo_id);
     }
 }

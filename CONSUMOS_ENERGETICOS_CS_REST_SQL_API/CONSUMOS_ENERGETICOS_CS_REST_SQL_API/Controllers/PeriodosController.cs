@@ -1,4 +1,5 @@
 ﻿using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Exceptions;
+using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Models;
 using CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,8 +52,64 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Controllers
             }
         }
 
-        //TODO: Crear el método para mapear el HTTP - POST - Periodo
-        //TODO: Crear el método para mapear el HTTP - PUT - Periodo
-        //TODO: Crear el método para mapear el HTTP - DEL - Periodo
+        [HttpPost]
+        public async Task<IActionResult> CreateAsync(Periodo unPeriodo)
+        {
+            try
+            {
+                var periodoCreado = await _periodoService
+                    .CreateAsync(unPeriodo);
+
+                return Ok(periodoCreado);
+            }
+            catch (AppValidationException error)
+            {
+                return BadRequest($"Error de validación: {error.Message}");
+            }
+            catch (DbOperationException error)
+            {
+                return BadRequest($"Error de operacion en DB: {error.Message}");
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateAsync(Periodo unPeriodo)
+        {
+            try
+            {
+                var periodoActualizado = await _periodoService
+                    .UpdateAsync(unPeriodo);
+
+                return Ok(periodoActualizado);
+            }
+            catch (AppValidationException error)
+            {
+                return BadRequest($"Error de validación: {error.Message}");
+            }
+            catch (DbOperationException error)
+            {
+                return BadRequest($"Error de operacion en DB: {error.Message}");
+            }
+        }
+
+        [HttpDelete("{periodo_id:Guid}")]
+        public async Task<IActionResult> RemoveAsync(Guid periodo_id)
+        {
+            try
+            {
+                var mesFacturacionEliminado = await _periodoService
+                    .RemoveAsync(periodo_id);
+
+                return Ok($"El periodo {mesFacturacionEliminado} fue eliminado correctamente!");
+            }
+            catch (AppValidationException error)
+            {
+                return BadRequest($"Error de validación: {error.Message}");
+            }
+            catch (DbOperationException error)
+            {
+                return BadRequest($"Error de operacion en DB: {error.Message}");
+            }
+        }
     }
 }

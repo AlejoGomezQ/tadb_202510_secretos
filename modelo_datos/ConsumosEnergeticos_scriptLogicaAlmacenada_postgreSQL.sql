@@ -7,29 +7,6 @@
 
 -- Con el usuario servicios_app
 
-
--- ****************************************
--- Creación de funciones
--- ****************************************
-
-create or replace function core.f_obtiene_intervalo_fechas(
-                                                        p_fecha_inicio date,
-                                                        p_fecha_final date)
-    returns int as
-$$
-    declare
-        l_total_dias int :=0;
-
-    begin
-        select
-            date_part('month',age(p_fecha_final, p_fecha_inicio)) * 30 +
-            date_part('day',age(p_fecha_final,p_fecha_inicio))
-        into l_total_dias;
-
-        return l_total_dias;
-    end;
-$$ language plpgsql;
-
 -- ****************************************
 -- Creación de procedimientos
 -- ****************************************
@@ -77,7 +54,6 @@ $$
         values (initcap(p_nombre), lower(p_unidad_medida));
     end;
 $$;
-
 
 -- p_actualiza_servicio
 create or replace procedure core.p_actualiza_servicio(
@@ -307,6 +283,7 @@ $$
     end;
 $$;
 
+-- p_elimina_periodo
 create or replace procedure core.p_elimina_periodo(
                             in p_uuid           uuid)
     language plpgsql as
@@ -486,3 +463,195 @@ $$
 $$;
 
 -- ### Consumos ####
+
+-- p_inserta_consumo
+create or replace procedure core.p_inserta_consumo(
+                            in p_periodo_uuid           uuid,
+                            in p_servicio_uuid          uuid,
+                            in p_lectura_actual         int,
+                            in p_lectura_anterior       int,
+                            in p_constante              float)
+    language plpgsql as
+$$
+    declare
+        l_total_registros   integer;
+        l_periodo_id        integer :=0;
+        l_servicio_id       integer :=0;
+
+    begin
+        -- Validar si el periodo de facturación existe
+        select count(id) into l_total_registros
+        from core.periodos
+        where uuid = p_periodo_uuid;
+
+        if l_total_registros = 0 then
+            raise exception 'No existe periodo de facturación registrado con el id proporcionado.';
+        end if;
+
+        -- Validar si el servicio existe
+        select count(id) into l_total_registros
+        from core.servicios
+        where uuid = p_servicio_uuid;
+
+        if l_total_registros = 0 then
+            raise exception 'No existe servicio registrado con el id proporcionado.';
+        end if;
+
+        -- Validar si las lecturas definen un rango de medición
+        if p_lectura_actual <= 0 or p_lectura_anterior <= 0 then
+            raise exception 'El valor de las lecturas no puede ser menores o iguales a cero.';
+        end if;
+
+        if p_lectura_anterior > p_lectura_actual then
+            raise exception 'El valor de las lecturas no define un rango de medición.';
+        end if;
+
+        select id into l_periodo_id
+        from core.periodos
+        where uuid = p_periodo_uuid;
+
+        select id into l_servicio_id
+        from core.servicios
+        where uuid = p_servicio_uuid;
+
+        -- Validar si ya existe registro para ese periodo para ese servicio
+        select count(*) into l_total_registros
+        from core.consumos
+        where periodo_id = l_periodo_id
+        and servicio_id = l_servicio_id;
+
+        if l_total_registros != 0 then 
+            raise exception 'Ya existe un consumo registrado para ese servicio en ese periodo.';
+        end if;
+
+        insert into core.consumos (periodo_id, servicio_id, lectura_actual, lectura_anterior, constante)
+        values (l_periodo_id, l_servicio_id, p_lectura_actual, p_lectura_anterior, p_constante);
+    end;
+$$;
+
+-- p_actualiza_consumo
+create or replace procedure core.p_actualiza_consumo(
+                            in p_periodo_uuid           uuid,
+                            in p_servicio_uuid          uuid,
+                            in p_lectura_actual         int,
+                            in p_lectura_anterior       int,
+                            in p_constante              float)
+    language plpgsql as
+$$
+    declare
+        l_total_registros   integer;
+        l_periodo_id        integer :=0;
+        l_servicio_id       integer :=0;
+
+    begin
+        -- Validar si el periodo de facturación existe
+        select count(id) into l_total_registros
+        from core.periodos
+        where uuid = p_periodo_uuid;
+
+        if l_total_registros = 0 then
+            raise exception 'No existe periodo de facturación registrado con el id proporcionado.';
+        end if;
+
+        -- Validar si el servicio existe
+        select count(id) into l_total_registros
+        from core.servicios
+        where uuid = p_servicio_uuid;
+
+        if l_total_registros = 0 then
+            raise exception 'No existe servicio registrado con el id proporcionado.';
+        end if;
+
+        -- Validar si las lecturas definen un rango de medición
+        if p_lectura_actual <= 0 or p_lectura_anterior <= 0 then
+            raise exception 'El valor de las lecturas no puede ser menores o iguales a cero.';
+        end if;
+
+        if p_lectura_anterior > p_lectura_actual then
+            raise exception 'El valor de las lecturas no define un rango de medición.';
+        end if;
+
+        select id into l_periodo_id
+        from core.periodos
+        where uuid = p_periodo_uuid;
+
+        select id into l_servicio_id
+        from core.servicios
+        where uuid = p_servicio_uuid;
+
+        -- Validar si ya existe registro para ese periodo para ese servicio
+        select count(*) into l_total_registros
+        from core.consumos
+        where periodo_id = l_periodo_id
+        and servicio_id = l_servicio_id;
+
+        if l_total_registros = 0 then 
+            raise exception 'No existe un consumo registrado para ese servicio en ese periodo.';
+        end if;        
+
+        update core.consumos 
+        set
+            lectura_actual = p_lectura_actual,
+            lectura_anterior = p_lectura_anterior,
+            constante = p_constante
+        where 
+            servicio_id = l_servicio_id and
+            periodo_id = l_periodo_id;
+    end;
+$$;
+
+-- p_elimina_consumo
+create or replace procedure core.p_elimina_consumo(
+                            in p_periodo_uuid           uuid,
+                            in p_servicio_uuid          uuid)
+    language plpgsql as
+$$
+    declare
+        l_total_registros   integer;
+        l_periodo_id        integer :=0;
+        l_servicio_id       integer :=0;
+
+    begin
+        -- Validar si el periodo de facturación existe
+        select count(id) into l_total_registros
+        from core.periodos
+        where uuid = p_periodo_uuid;
+
+        if l_total_registros = 0 then
+            raise exception 'No existe periodo de facturación registrado con el id proporcionado.';
+        end if;
+
+        -- Validar si el servicio existe
+        select count(id) into l_total_registros
+        from core.servicios
+        where uuid = p_servicio_uuid;
+
+        if l_total_registros = 0 then
+            raise exception 'No existe servicio registrado con el id proporcionado.';
+        end if;
+
+        select id into l_periodo_id
+        from core.periodos
+        where uuid = p_periodo_uuid;
+
+        select id into l_servicio_id
+        from core.servicios
+        where uuid = p_servicio_uuid;
+
+        -- Validamos si hay consumos para ese periodo y ese servicio
+
+        -- Validar si ya existe registro para ese periodo para ese servicio
+        select count(*) into l_total_registros
+        from core.consumos
+        where periodo_id = l_periodo_id
+        and servicio_id = l_servicio_id;
+
+        if l_total_registros = 0 then 
+            raise exception 'No existe un consumo registrado para ese servicio en ese periodo.';
+        end if;
+
+        delete from core.consumos
+        where periodo_id = l_periodo_id
+        and servicio_id = l_servicio_id;        
+    end;
+$$;

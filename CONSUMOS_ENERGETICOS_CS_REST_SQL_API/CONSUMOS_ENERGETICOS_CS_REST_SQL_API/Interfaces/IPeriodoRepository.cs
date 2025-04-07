@@ -8,6 +8,8 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Interfaces
 
         public Task<Periodo> GetByGuidAsync(Guid periodo_id);
 
+        public Task<Periodo> GetByBillingMonthAsync(string periodo_mes_facturacion);
+
         public Task<Periodo> GetByDatesAndBillingMonthAsync(Periodo unPeriodo);
 
         public Task<List<Consumo>> GetAssociatedConsumptionAsync(Guid periodo_id);

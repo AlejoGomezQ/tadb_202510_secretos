@@ -58,6 +58,34 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_SQL_API.Repositories
             return unPeriodo;
         }
 
+        public async Task<Periodo> GetByBillingMonthAsync(string periodo_mes_facturacion)
+        {
+            Periodo periodoExistente = new();
+
+            var conexion = contextoDB
+                .CreateConnection();
+
+            DynamicParameters parametrosSentencia = new();
+            parametrosSentencia.Add("@mes_facturacion", periodo_mes_facturacion,
+                        DbType.String, ParameterDirection.Input);
+
+            string sentenciaSQL =
+            "SELECT DISTINCT uuid id," +
+            "to_char(fecha_inicio,'DD/MM/YYYY') fechaInicio, " +
+            "to_char(fecha_final,'DD/MM/YYYY') fechaFinal, " +
+            "total_dias totaldias, mes_facturacion mesFacturacion " +
+            "FROM core.periodos " +
+            "WHERE LOWER(mes_facturacion) = LOWER(@mes_facturacion)";
+
+            var resultado = await conexion.QueryAsync<Periodo>(sentenciaSQL,
+                parametrosSentencia);
+
+            if (resultado.Any())
+                periodoExistente = resultado.First();
+
+            return periodoExistente;
+        }
+
         public async Task<Periodo> GetByDatesAndBillingMonthAsync(Periodo unPeriodo)
         {
             Periodo periodoExistente = new();

@@ -69,7 +69,7 @@ create extension if not exists "uuid-ossp";
 -- Con el usuario servicios_app
 
 -- ****************************************
--- Creación de base de datos y usuarios
+-- Creación de Tablas
 -- ****************************************
 
 -- Tabla: Estratos

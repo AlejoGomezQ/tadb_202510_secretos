@@ -11,28 +11,37 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
         public async Task<Resumen> GetAllAsync()
         {
             Resumen unResumen = new();
-
             var conexion = contextoDB.CreateConnection();
 
-            string sentenciaSQL = "SELECT COUNT(id) total FROM core.periodos";
-            unResumen.Periodos = await conexion
-                .QueryFirstAsync<int>(sentenciaSQL, new DynamicParameters());
+            //Total Periodos
+            var coleccionPeriodos = conexion.GetCollection<Periodo>(contextoDB.ConfiguracionColecciones.ColeccionPeriodos);
+            var totalPeriodos = await coleccionPeriodos
+                .EstimatedDocumentCountAsync();
 
-            sentenciaSQL = "SELECT COUNT(id) total FROM core.servicios";
-            unResumen.Servicios = await conexion
-                .QueryFirstAsync<int>(sentenciaSQL, new DynamicParameters());
+            unResumen.Periodos = totalPeriodos;
 
-            sentenciaSQL = "SELECT COUNT(id) total FROM core.componentes";
-            unResumen.Componentes = await conexion
-                .QueryFirstAsync<int>(sentenciaSQL, new DynamicParameters());
+            //Total Servicios
+            var coleccionServicios = conexion.GetCollection<Servicio>(contextoDB.ConfiguracionColecciones.ColeccionServicios);
+            var totalServicios = await coleccionServicios
+                .EstimatedDocumentCountAsync();
 
-            sentenciaSQL = "SELECT COUNT(id) total FROM core.departamentos";
-            unResumen.Departamentos = await conexion
-                .QueryFirstAsync<int>(sentenciaSQL, new DynamicParameters());
+            unResumen.Servicios = totalServicios;
 
-            sentenciaSQL = "SELECT COUNT(id) total FROM core.municipios";
-            unResumen.Municipios = await conexion
-                .QueryFirstAsync<int>(sentenciaSQL, new DynamicParameters());
+            //Total Componentes
+            var coleccionComponentes = conexion.GetCollection<Componente>(contextoDB.ConfiguracionColecciones.ColeccionComponentes);
+            var totalComponentes = await coleccionComponentes
+                .EstimatedDocumentCountAsync();
+
+            unResumen.Componentes = totalComponentes;
+
+            //sentenciaSQL = "SELECT COUNT(id) total FROM core.departamentos";
+            //unResumen.Departamentos = await conexion
+            //    .QueryFirstAsync<int>(sentenciaSQL, new DynamicParameters());
+
+
+            //sentenciaSQL = "SELECT COUNT(id) total FROM core.municipios";
+            //unResumen.Municipios = await conexion
+            //    .QueryFirstAsync<int>(sentenciaSQL, new DynamicParameters());
 
             return unResumen;
         }

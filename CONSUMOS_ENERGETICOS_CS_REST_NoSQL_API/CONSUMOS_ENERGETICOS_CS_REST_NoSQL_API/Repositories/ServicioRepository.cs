@@ -2,7 +2,9 @@
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Exceptions;
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Interfaces;
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models;
+using MongoDB.Driver;
 using System.Data;
+using System.Reflection.PortableExecutable;
 
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
@@ -16,126 +18,67 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
             var conexion = contextoDB
                 .CreateConnection();
 
-            string sentenciaSQL =
-                "SELECT DISTINCT uuid id, nombre, " +
-                "unidad_medida unidadmedida " +
-                "FROM core.servicios ORDER BY nombre";
+            var coleccionServicios = conexion
+                .GetCollection<Servicio>(contextoDB.ConfiguracionColecciones.ColeccionServicios);
 
-            var resultadoServicios = await conexion
-                .QueryAsync<Servicio>(sentenciaSQL, new DynamicParameters());
+            var losServicios = await coleccionServicios
+                .Find(_ => true)
+                .SortBy(servicio => servicio.Nombre)
+                .ToListAsync();
 
-            return [.. resultadoServicios];
+            return losServicios;
         }
 
-        public async Task<Servicio> GetByGuidAsync(Guid servicio_id)
+        public async Task<Servicio> GetByIdAsync(string servicio_id)
         {
             Servicio unServicio = new();
 
             var conexion = contextoDB
                 .CreateConnection();
 
-            DynamicParameters parametrosSentencia = new();
-            parametrosSentencia.Add("@servicio_id", servicio_id,
-                                    DbType.Guid, ParameterDirection.Input);
+            var coleccionServicios = conexion
+                .GetCollection<Servicio>(contextoDB.ConfiguracionColecciones.ColeccionServicios);
 
-            string sentenciaSQL =
-                "SELECT DISTINCT uuid id, nombre, " +
-                "unidad_medida unidadmedida " +
-                "FROM core.servicios " +
-                "WHERE uuid = @servicio_id";
+            var resultado = await coleccionServicios
+                .Find(servicio => servicio.Id == servicio_id)
+                .FirstOrDefaultAsync();
 
-            var resultado = await conexion
-                .QueryAsync<Servicio>(sentenciaSQL, parametrosSentencia);
-
-            if (resultado.Any())
-                unServicio = resultado.First();
+            if (resultado is not null)
+                unServicio = resultado;
 
             return unServicio;
         }
 
-        public async Task<Componente> GetByNameAndServiceAsync(string componente_nombre, string componente_servicio)
+        public async Task<List<Componente>> GetAssociatedComponentsAsync(string servicio_id)
         {
-            Componente unComponente = new();
-
             var conexion = contextoDB
                 .CreateConnection();
 
-            DynamicParameters parametrosSentencia = new();
-            parametrosSentencia.Add("@componente_nombre", componente_nombre,
-                                    DbType.String, ParameterDirection.Input);
-            parametrosSentencia.Add("@componente_servicio", componente_servicio,
-                                    DbType.String, ParameterDirection.Input);
+            var coleccionComponentes = conexion
+                .GetCollection<Componente>(contextoDB.ConfiguracionColecciones.ColeccionComponentes);
 
-            string sentenciaSQL =
-                "SELECT DISTINCT componente_uuid id, componente nombre, servicio, " +
-                "servicio_uuid servicioId " +
-                "FROM core.v_info_componentes " +
-                "WHERE componente = @componente_nombre " +
-                "AND servicio = @componente_servicio";
+            var losComponentes = await coleccionComponentes
+                .Find(componente => componente.ServicioId == servicio_id)
+                .SortBy(componente => componente.Nombre)
+                .ToListAsync();
 
-            var resultado = await conexion.QueryAsync<Componente>(sentenciaSQL,
-                parametrosSentencia);
-
-            if (resultado.Any())
-                unComponente = resultado.First();
-
-            return unComponente;
+            return losComponentes;
         }
 
-        public async Task<List<Componente>> GetAssociatedComponentsAsync(Guid servicio_id)
+        public async Task<List<Consumo>> GetAssociatedConsumptionAsync(string servicio_id)
         {
-            List<Componente> componentesAsociados = [];
-
             var conexion = contextoDB
                 .CreateConnection();
 
-            DynamicParameters parametrosSentencia = new();
-            parametrosSentencia.Add("@servicio_id", servicio_id,
-                                    DbType.Guid, ParameterDirection.Input);
+            var coleccionConsumos = conexion
+                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
 
-            string sentenciaSQL =
-                "SELECT DISTINCT componente_uuid id, componente nombre, servicio, " +
-                "servicio_uuid servicioId " +
-                "FROM core.v_info_componentes " +
-                "WHERE servicio_uuid = @servicio_id " +
-                "ORDER BY nombre";
+            var losConsumos = await coleccionConsumos
+                .Find(consumo => consumo.ServicioId == servicio_id)
+                .SortBy(consumo => consumo.MesFacturacion)
+                .ToListAsync();
 
-            var resultado = await conexion
-                .QueryAsync<Componente>(sentenciaSQL, parametrosSentencia);
-
-            if (resultado.Any())
-                componentesAsociados = [.. resultado];
-
-            return componentesAsociados;
-        }
-
-        public async Task<List<Consumo>> GetAssociatedConsumptionAsync(Guid servicio_id)
-        {
-            List<Consumo> consumosAsociados = [];
-
-            var conexion = contextoDB
-                .CreateConnection();
-
-            DynamicParameters parametrosSentencia = new();
-            parametrosSentencia.Add("@servicio_id", servicio_id,
-                                    DbType.Guid, ParameterDirection.Input);
-
-            string sentenciaSQL =
-                "SELECT DISTINCT  servicio_uuid servicioId, servicio, " +
-                "periodo_uuid periodoId, mes_facturacion mesFacturacion, " +
-                "lectura_actual lecturaActual, lectura_anterior lecturaAnterior, " +
-                "constante, valor " +
-                "FROM core.v_info_consumos " +
-                "WHERE servicio_uuid = @servicio_id " +
-                "ORDER BY servicio, lectura_actual";
-
-            var resultado = await conexion
-                .QueryAsync<Consumo>(sentenciaSQL, parametrosSentencia);
-
-            if (resultado.Any())
-                consumosAsociados = [.. resultado];
-
-            return consumosAsociados;
+            return losConsumos;
         }
 
         public async Task<Servicio> GetByNameAsync(string servicio_nombre)
@@ -145,88 +88,48 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
             var conexion = contextoDB
                 .CreateConnection();
 
-            DynamicParameters parametrosSentencia = new();
-            parametrosSentencia.Add("@servicio_nombre", servicio_nombre,
-                                    DbType.String, ParameterDirection.Input);
+            var coleccionServicios = conexion
+                .GetCollection<Servicio>(contextoDB.ConfiguracionColecciones.ColeccionServicios);
 
-            string sentenciaSQL =
-                "SELECT DISTINCT uuid id, nombre, " +
-                "unidad_medida unidadmedida " +
-                "FROM core.servicios " +
-                "WHERE LOWER(nombre) = LOWER(@servicio_nombre)";
+            var resultado = await coleccionServicios
+                .Find(servicio => servicio.Nombre!.Equals(servicio_nombre, StringComparison.CurrentCultureIgnoreCase))
+                .FirstOrDefaultAsync();
 
-            var resultado = await conexion
-                .QueryAsync<Servicio>(sentenciaSQL, parametrosSentencia);
-
-            if (resultado.Any())
-                unServicio = resultado.First();
+            if (resultado is not null)
+                unServicio = resultado;
 
             return unServicio;
         }
 
-        public async Task<int> GetTotalComponentsByServiceGuidAsync(Guid servicio_id)
+        public async Task<int> GetTotalComponentsByServiceIdAsync(string servicio_id)
         {
-            var conexion = contextoDB.CreateConnection();
-
-            DynamicParameters parametrosSentencia = new();
-            parametrosSentencia.Add("@servicio_id", servicio_id,
-                                    DbType.Guid, ParameterDirection.Input);
-
-            string sentenciaSQL = "SELECT COUNT(componente_uuid) totalRegistros " +
-                "FROM core.v_info_componentes " +
-                "WHERE servicio_uuid = @servicio_id";
-
-            var totalRegistros = await conexion
-                .QueryFirstAsync<int>(sentenciaSQL, parametrosSentencia);
-
-            return totalRegistros;
+            var losComponentes = await GetAssociatedComponentsAsync(servicio_id);
+            return losComponentes.Count;
         }
 
-        public async Task<int> GetTotalConsumptionByServiceGuidAsync(Guid servicio_id)
+        public async Task<int> GetTotalConsumptionByServiceIdAsync(string servicio_id)
         {
-            var conexion = contextoDB.CreateConnection();
-
-            DynamicParameters parametrosSentencia = new();
-            parametrosSentencia.Add("@servicio_id", servicio_id,
-                                    DbType.Guid, ParameterDirection.Input);
-
-            string sentenciaSQL = "SELECT COUNT(periodo_uuid) totalRegistros " +
-                "FROM core.v_info_consumos " +
-                "WHERE servicio_uuid = @servicio_id";
-
-            var totalRegistros = await conexion
-                .QueryFirstAsync<int>(sentenciaSQL, parametrosSentencia);
-
-            return totalRegistros;
+            var losConsumos = await GetAssociatedConsumptionAsync(servicio_id);
+            return losConsumos.Count;
         }
 
         public async Task<bool> CreateAsync(Servicio unServicio)
         {
             bool resultadoAccion = false;
 
-            try
-            {
-                var conexion = contextoDB.CreateConnection();
+            var conexion = contextoDB
+                .CreateConnection();
 
-                string procedimiento = "core.p_inserta_servicio";
-                var parametros = new
-                {
-                    p_nombre = unServicio.Nombre,
-                    p_unidad_medida = unServicio.UnidadMedida
-                };
+            var coleccionServicios = conexion
+                .GetCollection<Servicio>(contextoDB.ConfiguracionColecciones.ColeccionServicios);
 
-                var cantidad_filas = await conexion.ExecuteAsync(
-                    procedimiento,
-                    parametros,
-                    commandType: CommandType.StoredProcedure);
+            await coleccionServicios
+                .InsertOneAsync(unServicio);
 
-                if (cantidad_filas != 0)
-                    resultadoAccion = true;
-            }
-            catch (NpgsqlException error)
-            {
-                throw new DbOperationException(error.Message);
-            }
+            var resultado = await GetByNameAsync(unServicio.Nombre!);
+
+            if (resultado is not null)
+                resultadoAccion = true;
 
             return resultadoAccion;
         }
@@ -235,60 +138,36 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
         {
             bool resultadoAccion = false;
 
-            try
-            {
-                var conexion = contextoDB.CreateConnection();
+            var conexion = contextoDB
+                .CreateConnection();
 
-                string procedimiento = "core.p_actualiza_servicio";
-                var parametros = new
-                {
-                    p_uuid = unServicio.Id,
-                    p_nombre = unServicio.Nombre,
-                    p_unidad_medida = unServicio.UnidadMedida
-                };
+            var coleccionServicios = conexion
+                .GetCollection<Servicio>(contextoDB.ConfiguracionColecciones.ColeccionServicios);
 
-                var cantidad_filas = await conexion.ExecuteAsync(
-                    procedimiento,
-                    parametros,
-                    commandType: CommandType.StoredProcedure);
+            var resultado = await coleccionServicios
+                .ReplaceOneAsync(servicio => servicio.Id == unServicio.Id, unServicio);
 
-                if (cantidad_filas != 0)
-                    resultadoAccion = true;
-            }
-            catch (NpgsqlException error)
-            {
-                throw new DbOperationException(error.Message);
-            }
+            if (resultado.IsAcknowledged)
+                resultadoAccion = true;
 
             return resultadoAccion;
         }
 
-        public async Task<bool> RemoveAsync(Guid servicio_id)
+        public async Task<bool> RemoveAsync(string servicio_id)
         {
             bool resultadoAccion = false;
 
-            try
-            {
-                var conexion = contextoDB.CreateConnection();
+            var conexion = contextoDB
+                .CreateConnection();
 
-                string procedimiento = "core.p_elimina_servicio";
-                var parametros = new
-                {
-                    p_uuid = servicio_id
-                };
+            var coleccionServicios = conexion
+                .GetCollection<Servicio>(contextoDB.ConfiguracionColecciones.ColeccionServicios);
 
-                var cantidad_filas = await conexion.ExecuteAsync(
-                    procedimiento,
-                    parametros,
-                    commandType: CommandType.StoredProcedure);
+            var resultado = await coleccionServicios
+                .DeleteOneAsync(servicio => servicio.Id == servicio_id);
 
-                if (cantidad_filas != 0)
-                    resultadoAccion = true;
-            }
-            catch (NpgsqlException error)
-            {
-                throw new DbOperationException(error.Message);
-            }
+            if (resultado.IsAcknowledged)
+                resultadoAccion = true;
 
             return resultadoAccion;
         }

@@ -14,12 +14,12 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                 .GetAllAsync();
         }
 
-        public async Task<Componente> GetByGuidAsync(Guid componente_id)
+        public async Task<Componente> GetByIdAsync(string componente_id)
         {
             Componente unComponente = await _componenteRepository
-                .GetByGuidAsync(componente_id);
+                .GetByIdAsync(componente_id);
 
-            if (unComponente.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(unComponente.Id))
                 throw new AppValidationException($"Componente no encontrado con el Guid {componente_id}");
 
             return unComponente;
@@ -38,9 +38,9 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                 .GetByNameAndServiceAsync(unComponente.Nombre!, unComponente.Servicio!);
 
             // Si existe, no se puede insertar
-            if (componenteExistente.Id != Guid.Empty)
+            if (!string.IsNullOrEmpty(componenteExistente.Id))
                 throw new AppValidationException($"Ya existe un componente {unComponente.Nombre} " +
-                    $"asociado al servicio {unComponente.Servicio}");
+                $"asociado al servicio {unComponente.Servicio}");
 
             //Si existe y los datos son iguales, se retorna el objeto para garantizar idempotencia
             if (componenteExistente.Nombre == unComponente.Nombre && componenteExistente.Servicio == unComponente.Servicio)
@@ -74,9 +74,9 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
 
             //Validamos primero si existe con ese Guid
             var componenteExistente = await _componenteRepository
-                .GetByGuidAsync(unComponente.Id);
+                .GetByIdAsync(unComponente.Id!);
 
-            if (componenteExistente.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(componenteExistente.Id))
                 throw new AppValidationException($"No existe un componente con el Guid {unComponente.Id} que se pueda actualizar");
 
             //Si existe y los datos son iguales, se retorna el objeto para garantizar idempotencia
@@ -92,7 +92,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                     throw new AppValidationException("Operación ejecutada pero no generó cambios en la DB");
 
                 componenteExistente = await _componenteRepository
-                    .GetByGuidAsync(unComponente.Id);
+                    .GetByIdAsync(unComponente.Id!);
             }
             catch (DbOperationException)
             {
@@ -102,12 +102,12 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             return componenteExistente;
         }
 
-        public async Task<string> RemoveAsync(Guid componente_id)
+        public async Task<string> RemoveAsync(string componente_id)
         {
             Componente unComponente = await _componenteRepository
-                .GetByGuidAsync(componente_id);
+                .GetByIdAsync(componente_id);
 
-            if (unComponente.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(unComponente.Id))
                 throw new AppValidationException($"Componente no encontrado con el id {componente_id}");
 
             string nombreComponenteEliminado = unComponente.Nombre!;

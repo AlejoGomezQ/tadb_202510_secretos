@@ -20,13 +20,13 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Controllers
             return Ok(losPeriodos);
         }
 
-        [HttpGet("{periodo_id:Guid}")]
-        public async Task<IActionResult> GetByGuidAsync(Guid periodo_id)
+        [HttpGet("{periodo_id:length(24)}")]
+        public async Task<IActionResult> GetByIdAsync(string periodo_id)
         {
             try
             {
                 var unPeriodo = await _periodoService
-                    .GetByGuidAsync(periodo_id);
+                    .GetByIdAsync(periodo_id);
 
                 return Ok(unPeriodo);
             }
@@ -36,8 +36,8 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Controllers
             }
         }
 
-        [HttpGet("{periodo_id:Guid}/Consumos")]
-        public async Task<IActionResult> GetAssociatedConsumptionAsync(Guid periodo_id)
+        [HttpGet("{periodo_id:length(24)}/Consumos")]
+        public async Task<IActionResult> GetAssociatedConsumptionAsync(string periodo_id)
         {
             try
             {
@@ -92,8 +92,8 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Controllers
             }
         }
 
-        [HttpDelete("{periodo_id:Guid}")]
-        public async Task<IActionResult> RemoveAsync(Guid periodo_id)
+        [HttpDelete("{periodo_id:length(24)}")]
+        public async Task<IActionResult> RemoveAsync(string periodo_id)
         {
             try
             {

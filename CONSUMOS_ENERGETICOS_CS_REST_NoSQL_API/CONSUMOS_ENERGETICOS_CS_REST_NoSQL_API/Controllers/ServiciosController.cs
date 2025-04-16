@@ -20,13 +20,13 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Controllers
             return Ok(losServicios);
         }
 
-        [HttpGet("{servicio_id:Guid}")]
-        public async Task<IActionResult> GetByGuidAsync(Guid servicio_id)
+        [HttpGet("{servicio_id:length(24)}")]
+        public async Task<IActionResult> GetByIdAsync(string servicio_id)
         {
             try
             {
                 var unServicio = await _servicioService
-                    .GetByGuidAsync(servicio_id);
+                    .GetByIdAsync(servicio_id);
 
                 return Ok(unServicio);
             }
@@ -36,8 +36,8 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Controllers
             }
         }
 
-        [HttpGet("{servicio_id:Guid}/Componentes")]
-        public async Task<IActionResult> GetAssociatedComponentsAsync(Guid servicio_id)
+        [HttpGet("{servicio_id:length(24)}/Componentes")]
+        public async Task<IActionResult> GetAssociatedComponentsAsync(string servicio_id)
         {
             try
             {
@@ -52,8 +52,8 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Controllers
             }
         }
 
-        [HttpGet("{servicio_id:Guid}/Consumos")]
-        public async Task<IActionResult> GetAssociatedConsumptionAsync(Guid servicio_id)
+        [HttpGet("{servicio_id:length(24)}/Consumos")]
+        public async Task<IActionResult> GetAssociatedConsumptionAsync(string servicio_id)
         {
             try
             {
@@ -108,8 +108,8 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Controllers
             }
         }
 
-        [HttpDelete("{servicio_id:Guid}")]
-        public async Task<IActionResult> RemoveAsync(Guid servicio_id)
+        [HttpDelete("{servicio_id:length(24)}")]
+        public async Task<IActionResult> RemoveAsync(string servicio_id)
         {
             try
             {

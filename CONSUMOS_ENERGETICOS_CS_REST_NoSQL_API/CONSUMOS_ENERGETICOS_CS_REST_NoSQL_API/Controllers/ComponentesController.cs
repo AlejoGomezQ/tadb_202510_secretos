@@ -20,13 +20,13 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Controllers
             return Ok(losComponentes);
         }
 
-        [HttpGet("{componente_id:Guid}")]
-        public async Task<IActionResult> GetByGuidAsync(Guid componente_id)
+        [HttpGet("{componente_id:length(24)}")]
+        public async Task<IActionResult> GetByIdAsync(string componente_id)
         {
             try
             {
                 var unComponente = await _componenteService
-                    .GetByGuidAsync(componente_id);
+                    .GetByIdAsync(componente_id);
 
                 return Ok(unComponente);
             }
@@ -78,8 +78,8 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Controllers
             }
         }
 
-        [HttpDelete("{componente_id:Guid}")]
-        public async Task<IActionResult> RemoveAsync(Guid componente_id)
+        [HttpDelete("{componente_id:length(24)}")]
+        public async Task<IActionResult> RemoveAsync(string componente_id)
         {
             try
             {

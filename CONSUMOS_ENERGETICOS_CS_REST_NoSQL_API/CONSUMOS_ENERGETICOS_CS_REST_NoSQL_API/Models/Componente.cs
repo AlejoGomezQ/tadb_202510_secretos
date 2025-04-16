@@ -1,20 +1,30 @@
-﻿using System.Text.Json.Serialization;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Serialization;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models
 {
     public class Componente
     {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
         [JsonPropertyName("id")]
-        public Guid Id { get; set; } = Guid.Empty;
+        public string? Id { get; set; } = string.Empty;
 
+        [BsonElement("nombre")]
         [JsonPropertyName("nombre")]
+        [BsonRepresentation(BsonType.String)]
         public string? Nombre { get; set; } = null;
 
+        [BsonElement("servicio")]
         [JsonPropertyName("servicio")]
+        [BsonRepresentation(BsonType.String)]
         public string? Servicio { get; set; } = null;
 
+        [BsonElement("servicio_id")]
         [JsonPropertyName("servicio_id")]
-        public Guid ServicioId { get; set; } = Guid.Empty;
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? ServicioId { get; set; } = string.Empty;
         public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType())
@@ -32,7 +42,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models
             unchecked
             {
                 int hash = 3;
-                hash = hash * 5 + Id.GetHashCode();
+                hash = hash * 5 + (Id?.GetHashCode() ?? 0);
                 hash = hash * 5 + (Nombre?.GetHashCode() ?? 0);
                 hash = hash * 5 + (Servicio?.GetHashCode() ?? 0);
 

@@ -30,7 +30,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                 .GetByBillingMonthAsync(unConsumo.MesFacturacion!);
 
             //Si no existe, no se puede registrar consumo
-            if (periodoExistente.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(periodoExistente.Id))
                 throw new AppValidationException($"No existe un periodo para el mes de facturacion {unConsumo.MesFacturacion}.");
 
             //Validamos si existe un servicio con ese nombre 
@@ -38,7 +38,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                 .GetByNameAsync(unConsumo.Servicio!);
 
             //Si no existe, no se puede registrar consumo
-            if (servicioExistente.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(servicioExistente.Id))
                 throw new AppValidationException($"No existe un servicio {unConsumo.Servicio} para el cual registrar consumo.");
 
             //Si ya existe consumo para ese mes y servicio, se retorna el objeto para garantizar idempotencia
@@ -83,7 +83,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                 .GetByBillingMonthAsync(unConsumo.MesFacturacion!);
 
             //Si no existe, no se puede registrar consumo
-            if (periodoExistente.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(periodoExistente.Id))
                 throw new AppValidationException($"No existe un periodo para el mes de facturacion {unConsumo.MesFacturacion}.");
 
             //Validamos si existe un servicio con ese nombre 
@@ -91,7 +91,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                 .GetByNameAsync(unConsumo.Servicio!);
 
             //Si no existe, no se puede registrar consumo
-            if (servicioExistente.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(servicioExistente.Id))
                 throw new AppValidationException($"No existe un servicio {unConsumo.Servicio} para el cual registrar consumo.");
 
             //Si no existe consumo para ese mes y servicio, no se puede actualizar
@@ -131,7 +131,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                 .GetByBillingMonthAsync(unConsumo.MesFacturacion!);
 
             //Si no existe, no se puede registrar consumo
-            if (periodoExistente.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(periodoExistente.Id))
                 throw new AppValidationException($"No existe un periodo para el mes de facturacion {unConsumo.MesFacturacion}.");
 
             //Validamos si existe un servicio con ese nombre 
@@ -139,7 +139,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                 .GetByNameAsync(unConsumo.Servicio!);
 
             //Si no existe, no se puede registrar consumo
-            if (servicioExistente.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(servicioExistente.Id))
                 throw new AppValidationException($"No existe un servicio {unConsumo.Servicio} para el cual registrar consumo.");
 
             //Si no existe consumo para ese mes y servicio, no se puede actualizar

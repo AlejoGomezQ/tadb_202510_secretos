@@ -2,6 +2,7 @@
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Exceptions;
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Interfaces;
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models;
+using MongoDB.Driver;
 using System.Data;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
@@ -15,81 +16,59 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
             var conexion = contextoDB
                 .CreateConnection();
 
-            string sentenciaSQL =
-                "SELECT DISTINCT  servicio_uuid servicioId, servicio, " +
-                "periodo_uuid periodoId, mes_facturacion mesFacturacion, " +
-                "lectura_actual lecturaActual, lectura_anterior lecturaAnterior, " +
-                "constante, valor " +
-                "FROM core.v_info_consumos " +
-                "ORDER BY servicio, lectura_actual";
+            var coleccionConsumos = conexion
+                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
 
-            var resultadoConsumos = await conexion
-                .QueryAsync<Consumo>(sentenciaSQL, new DynamicParameters());
+            var losConsumos = await coleccionConsumos
+                .Find(_ => true)
+                .SortBy(consumo => consumo.Servicio)
+                .ToListAsync();
 
-            return [.. resultadoConsumos];
+            return losConsumos;
         }
 
         public async Task<Consumo> GetByBillingMonthAndServiceAsync(string mes_facturacion, string servicio_nombre)
         {
-            Consumo consumoExistente = new();
+            Consumo unConsumo = new();
 
             var conexion = contextoDB
                 .CreateConnection();
 
-            DynamicParameters parametrosSentencia = new();
-            parametrosSentencia.Add("@mes_facturacion", mes_facturacion,
-                                    DbType.String, ParameterDirection.Input);
-            parametrosSentencia.Add("@servicio_nombre", servicio_nombre,
-                                    DbType.String, ParameterDirection.Input);
+            var coleccionConsumos = conexion
+                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
 
-            string sentenciaSQL =
-                "SELECT DISTINCT servicio_uuid servicioId, servicio, " +
-                "periodo_uuid periodoId, mes_facturacion mesFacturacion, " +
-                "lectura_actual lecturaActual, lectura_anterior lecturaAnterior, " +
-                "constante, valor " +
-                "FROM core.v_info_consumos " +
-                "WHERE LOWER(mes_facturacion) = LOWER(@mes_facturacion) " +
-                "AND LOWER(servicio) = LOWER(@servicio_nombre)";
+            var builder = Builders<Consumo>.Filter;
+            var filtro = builder.And(
+                builder.Eq(consumo => consumo.MesFacturacion, mes_facturacion),
+                builder.Eq(consumo => consumo.Servicio, servicio_nombre));
 
-            var resultado = await conexion.QueryAsync<Consumo>(sentenciaSQL,
-                parametrosSentencia);
+            var resultado = await coleccionConsumos
+                .Find(filtro)
+                .FirstOrDefaultAsync();
 
-            if (resultado.Any())
-                consumoExistente = resultado.First();
+            if (resultado is not null)
+                unConsumo = resultado;
 
-            return consumoExistente;
+            return unConsumo;
         }
 
         public async Task<bool> CreateAsync(Consumo unConsumo)
         {
             bool resultadoAccion = false;
 
-            try
-            {
-                var conexion = contextoDB.CreateConnection();
+            var conexion = contextoDB
+                .CreateConnection();
 
-                string procedimiento = "core.p_inserta_consumo";
-                var parametros = new
-                {
-                    p_periodo_uuid = unConsumo.PeriodoId,
-                    p_servicio_uuid = unConsumo.ServicioId,
-                    p_lectura_actual = unConsumo.LecturaActual,
-                    p_lectura_anterior = unConsumo.LecturaAnterior,
-                    p_constante = unConsumo.Constante
-                };
+            var coleccionConsumos = conexion
+                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
 
-                var cantidad_filas = await conexion.ExecuteAsync(
-                    procedimiento,
-                    parametros,
-                    commandType: CommandType.StoredProcedure);
+            await coleccionConsumos
+                .InsertOneAsync(unConsumo);
 
-                if (cantidad_filas != 0)
-                    resultadoAccion = true;
-            }
-            catch (NpgsqlException error)
-            {
-                throw new DbOperationException(error.Message);
-            }
+            var resultado = await GetByBillingMonthAndServiceAsync(unConsumo.MesFacturacion!, unConsumo.Servicio!);
+
+            if (resultado is not null)
+                resultadoAccion = true;
 
             return resultadoAccion;
         }
@@ -98,32 +77,17 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
         {
             bool resultadoAccion = false;
 
-            try
-            {
-                var conexion = contextoDB.CreateConnection();
+            var conexion = contextoDB
+                .CreateConnection();
 
-                string procedimiento = "core.p_actualiza_consumo";
-                var parametros = new
-                {
-                    p_periodo_uuid = unConsumo.PeriodoId,
-                    p_servicio_uuid = unConsumo.ServicioId,
-                    p_lectura_actual = unConsumo.LecturaActual,
-                    p_lectura_anterior = unConsumo.LecturaAnterior,
-                    p_constante = unConsumo.Constante
-                };
+            var coleccionConsumos = conexion
+                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
 
-                var cantidad_filas = await conexion.ExecuteAsync(
-                    procedimiento,
-                    parametros,
-                    commandType: CommandType.StoredProcedure);
+            var resultado = await coleccionConsumos
+                .ReplaceOneAsync(consumo => consumo.Id == unConsumo.Id, unConsumo);
 
-                if (cantidad_filas != 0)
-                    resultadoAccion = true;
-            }
-            catch (NpgsqlException error)
-            {
-                throw new DbOperationException(error.Message);
-            }
+            if (resultado.IsAcknowledged)
+                resultadoAccion = true;
 
             return resultadoAccion;
         }
@@ -132,29 +96,17 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
         {
             bool resultadoAccion = false;
 
-            try
-            {
-                var conexion = contextoDB.CreateConnection();
+            var conexion = contextoDB
+                .CreateConnection();
 
-                string procedimiento = "core.p_elimina_consumo";
-                var parametros = new
-                {
-                    p_periodo_uuid = unConsumo.PeriodoId,
-                    p_servicio_uuid = unConsumo.ServicioId
-                };
+            var coleccionConsumos = conexion
+                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
 
-                var cantidad_filas = await conexion.ExecuteAsync(
-                    procedimiento,
-                    parametros,
-                    commandType: CommandType.StoredProcedure);
+            var resultado = await coleccionConsumos
+                .DeleteOneAsync(consumo => consumo.Id == unConsumo.Id);
 
-                if (cantidad_filas != 0)
-                    resultadoAccion = true;
-            }
-            catch (NpgsqlException error)
-            {
-                throw new DbOperationException(error.Message);
-            }
+            if (resultado.IsAcknowledged)
+                resultadoAccion = true;
 
             return resultadoAccion;
         }

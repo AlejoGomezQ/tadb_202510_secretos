@@ -14,23 +14,23 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             .GetAllAsync();
         }
 
-        public async Task<Servicio> GetByGuidAsync(Guid servicio_id)
+        public async Task<Servicio> GetByIdAsync(string servicio_id)
         {
             Servicio unServicio = await _servicioRepository
-                .GetByGuidAsync(servicio_id);
+                .GetByIdAsync(servicio_id);
 
-            if (unServicio.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(unServicio.Id))
                 throw new AppValidationException($"Servicio no encontrado con el ID {servicio_id}");
 
             return unServicio;
         }
 
-        public async Task<List<Componente>> GetAssociatedComponentsAsync(Guid servicio_id)
+        public async Task<List<Componente>> GetAssociatedComponentsAsync(string servicio_id)
         {
             Servicio unServicio = await _servicioRepository
-                .GetByGuidAsync(servicio_id);
+                .GetByIdAsync(servicio_id);
 
-            if (unServicio.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(unServicio.Id))
                 throw new AppValidationException($"Servicio no encontrado con el id {servicio_id}");
 
             var componentesAsociados = await _servicioRepository
@@ -42,12 +42,12 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             return componentesAsociados;
         }
 
-        public async Task<List<Consumo>> GetAssociatedConsumptionAsync(Guid servicio_id)
+        public async Task<List<Consumo>> GetAssociatedConsumptionAsync(string servicio_id)
         {
             Servicio unServicio = await _servicioRepository
-                .GetByGuidAsync(servicio_id);
+                .GetByIdAsync(servicio_id);
 
-            if (unServicio.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(unServicio.Id))
                 throw new AppValidationException($"Servicio no encontrado con el id {servicio_id}");
 
             var consumosAsociados = await _servicioRepository
@@ -71,7 +71,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                 .GetByNameAsync(unServicio.Nombre!);
 
             // Si existe, pero con otra unidad de medida, no se puede insertar
-            if (servicioExistente.Id != Guid.Empty && servicioExistente.UnidadMedida != unServicio.UnidadMedida)
+            if (!string.IsNullOrEmpty(servicioExistente.Id) && servicioExistente.UnidadMedida != unServicio.UnidadMedida)
                 throw new AppValidationException($"Ya existe un servicio {unServicio.Nombre} " +
                     $"pero con unidad de medida {servicioExistente.UnidadMedida}");
 
@@ -107,9 +107,9 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
 
             //Primero, validamos si existe un servicio con ese Guid
             var servicioExistente = await _servicioRepository
-                .GetByGuidAsync(unServicio.Id);
+                .GetByIdAsync(unServicio.Id!);
 
-            if (servicioExistente.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(servicioExistente.Id))
                 throw new AppValidationException($"No existe un servicio con el Guid {unServicio.Id} que se pueda actualizar");
 
             //Si existe y los datos son iguales, se retorna el objeto para garantizar idempotencia
@@ -125,7 +125,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                     throw new AppValidationException("Operación ejecutada pero no generó cambios en la DB");
 
                 servicioExistente = await _servicioRepository
-                    .GetByGuidAsync(unServicio.Id);
+                    .GetByIdAsync(unServicio.Id!);
             }
             catch (DbOperationException)
             {
@@ -135,23 +135,23 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             return servicioExistente;
         }
 
-        public async Task<string> RemoveAsync(Guid servicio_id)
+        public async Task<string> RemoveAsync(string servicio_id)
         {
             Servicio unServicio = await _servicioRepository
-                .GetByGuidAsync(servicio_id);
+                .GetByIdAsync(servicio_id);
 
-            if (unServicio.Id == Guid.Empty)
+            if (string.IsNullOrEmpty(unServicio.Id))
                 throw new AppValidationException($"Servicio no encontrado con el id {servicio_id}");
 
             var totalComponentesPorServicio = await _servicioRepository
-                .GetTotalComponentsByServiceGuidAsync(servicio_id);
+                .GetTotalComponentsByServiceIdAsync(servicio_id);
 
             if (totalComponentesPorServicio > 0)
                 throw new AppValidationException($"No se puede eliminar {unServicio.Nombre} porque " +
                     $"tiene {totalComponentesPorServicio} componentes asociados");
 
             var totalConsumosPorServicio = await _servicioRepository
-                .GetTotalConsumptionByServiceGuidAsync(servicio_id);
+                .GetTotalConsumptionByServiceIdAsync(servicio_id);
 
             if (totalConsumosPorServicio > 0)
                 throw new AppValidationException($"No se puede eliminar {unServicio.Nombre} porque " +

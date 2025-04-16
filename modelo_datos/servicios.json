@@ -1,0 +1,10 @@
+[
+    {
+      "nombre": "Electricidad",
+      "unidad_medida": "kwh"
+    },
+    {
+      "nombre": "Gas",
+      "unidad_medida": "m3"
+    }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "mes_facturacion": "Abril 2025",
+    "fecha_inicio": "11/02/2025",
+    "fecha_final": "12/03/2025",
+    "total_dias": 29
+  },
+  {
+    "mes_facturacion": "Diciembre 2024",
+    "fecha_inicio": "11/10/2024",
+    "fecha_final": "12/11/2024",
+    "total_dias": 32
+  },
+  {
+    "mes_facturacion": "Marzo 2025",
+    "fecha_inicio": "12/01/2025",
+    "fecha_final": "11/02/2025",
+    "total_dias": 30
+  },
+  {
+    "mes_facturacion": "Noviembre 2024",
+    "fecha_inicio": "12/09/2024",
+    "fecha_final": "11/10/2024",
+    "total_dias": 29
+  },
+  {
+    "mes_facturacion": "Enero 2025",
+    "fecha_inicio": "12/11/2024",
+    "fecha_final": "12/12/2024",
+    "total_dias": 30
+  },
+  {
+    "mes_facturacion": "Febrero 2025",
+    "fecha_inicio": "12/12/2024",
+    "fecha_final": "12/01/2025",
+    "total_dias": 31
+  },
+  {
+    "mes_facturacion": "Octubre 2024",
+    "fecha_inicio": "13/08/2024",
+    "fecha_final": "12/09/2024",
+    "total_dias": 30
+  }
+]

@@ -1,0 +1,167 @@
+[
+  {
+    "id": 1,
+    "nombre": "AMAZONAS",
+    "dane_id": "91"
+  },
+  {
+    "id": 2,
+    "nombre": "ANTIOQUIA",
+    "dane_id": "05"
+  },
+  {
+    "id": 3,
+    "nombre": "ARAUCA",
+    "dane_id": "81"
+  },
+  {
+    "id": 4,
+    "nombre": "ATLÁNTICO",
+    "dane_id": "08"
+  },
+  {
+    "id": 5,
+    "nombre": "BOLÍVAR",
+    "dane_id": "13"
+  },
+  {
+    "id": 6,
+    "nombre": "BOYACÁ",
+    "dane_id": "15"
+  },
+  {
+    "id": 7,
+    "nombre": "CALDAS",
+    "dane_id": "17"
+  },
+  {
+    "id": 8,
+    "nombre": "CAQUETÁ",
+    "dane_id": "18"
+  },
+  {
+    "id": 9,
+    "nombre": "CASANARE",
+    "dane_id": "85"
+  },
+  {
+    "id": 10,
+    "nombre": "CAUCA",
+    "dane_id": "19"
+  },
+  {
+    "id": 11,
+    "nombre": "CESAR",
+    "dane_id": "20"
+  },
+  {
+    "id": 12,
+    "nombre": "CÓRDOBA",
+    "dane_id": "23"
+  },
+  {
+    "id": 13,
+    "nombre": "CUNDINAMARCA",
+    "dane_id": "25"
+  },
+  {
+    "id": 14,
+    "nombre": "GUAINÍA",
+    "dane_id": "94"
+  },
+  {
+    "id": 16,
+    "nombre": "GUAVIARE",
+    "dane_id": "95"
+  },
+  {
+    "id": 17,
+    "nombre": "HUILA",
+    "dane_id": "41"
+  },
+  {
+    "id": 18,
+    "nombre": "MAGDALENA",
+    "dane_id": "47"
+  },
+  {
+    "id": 19,
+    "nombre": "META",
+    "dane_id": "50"
+  },
+  {
+    "id": 20,
+    "nombre": "NARIÑO",
+    "dane_id": "52"
+  },
+  {
+    "id": 21,
+    "nombre": "NORTE DE SANTANDER",
+    "dane_id": "54"
+  },
+  {
+    "id": 22,
+    "nombre": "PUTUMAYO",
+    "dane_id": "86"
+  },
+  {
+    "id": 23,
+    "nombre": "QUINDÍO",
+    "dane_id": "63"
+  },
+  {
+    "id": 24,
+    "nombre": "RISARALDA",
+    "dane_id": "66"
+  },
+  {
+    "id": 26,
+    "nombre": "SANTANDER",
+    "dane_id": "68"
+  },
+  {
+    "id": 27,
+    "nombre": "SUCRE",
+    "dane_id": "70"
+  },
+  {
+    "id": 28,
+    "nombre": "TOLIMA",
+    "dane_id": "73"
+  },
+  {
+    "id": 30,
+    "nombre": "VICHADA",
+    "dane_id": "99"
+  },
+  {
+    "id": 31,
+    "nombre": "CHOCÓ",
+    "dane_id": "27"
+  },
+  {
+    "id": 32,
+    "nombre": "VAUPÉS",
+    "dane_id": "97"
+  },
+  {
+    "id": 15,
+    "nombre": "LA GUAJIRA",
+    "dane_id": "44"
+  },
+  {
+    "id": 25,
+    "nombre": "ARCHIPIÉLAGO DE SAN ANDRÉS. PROVIDENCIA Y SANTA CATALINA",
+    "dane_id": "88"
+  },
+  {
+    "id": 33,
+    "nombre": "BOGOTÁ. D.C.",
+    "dane_id": "11"
+  },
+  {
+    "id": 29,
+    "nombre": "VALLE DEL CAUCA",
+    "dane_id": "76"
+  }
+]

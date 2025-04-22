@@ -2,7 +2,7 @@
 {
     public class ConsumosEnergeticosDatabaseSettings
     {
-        public string DatabaseName { get; set; } = null!;
+        public string BaseDeDatos { get; set; } = null!;
         public string ColeccionConsumos { get; set; } = null!;
         public string ColeccionComponentes { get; set; } = null!;
         public string ColeccionServicios { get; set; } = null!;
@@ -12,7 +12,7 @@
         {
             var configuracion = unaConfiguracion.GetSection("ConsumosEnergeticosDatabaseSettings");
 
-            DatabaseName = configuracion.GetSection("DatabaseName").Value!;
+            BaseDeDatos = configuracion.GetSection("BaseDeDatos").Value!;
             ColeccionConsumos = configuracion.GetSection("ColeccionConsumos").Value!;
             ColeccionComponentes = configuracion.GetSection("ColeccionComponentes").Value!;
             ColeccionServicios = configuracion.GetSection("ColeccionServicios").Value!;

@@ -61,19 +61,19 @@ db.createUser({
   roles: [
     { role: "readWrite", db: "servicios_db" },
     { role: "dbAdmin", db: "servicios_db" }
-  ]
-});
+  ],
+    mechanisms: ["SCRAM-SHA-256"]
+  }
+);
 
 db.createUser(
   {
     user: "servicios_usr",
     pwd: "unaClav3",
     roles: [ 
-        { 
-            role: "GestorDocumentos", 
-            db: "servicios_db" 
-        }
-    ]
+    { role: "GestorDocumentos", db: "servicios_db" }
+    ],
+    mechanisms: ["SCRAM-SHA-256"]
   }
 );
 

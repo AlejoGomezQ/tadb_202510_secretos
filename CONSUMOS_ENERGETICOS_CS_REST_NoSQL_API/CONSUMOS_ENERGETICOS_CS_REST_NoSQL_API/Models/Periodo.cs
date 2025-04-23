@@ -39,9 +39,11 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models
 
             var otroPeriodo = (Periodo)obj;
 
-            return Id == otroPeriodo.Id
+            return
+                Id!.Equals(otroPeriodo.Id)
                 && FechaInicio!.Equals(otroPeriodo.FechaInicio)
                 && FechaFinal!.Equals(otroPeriodo.FechaFinal)
+                && TotalDias == otroPeriodo.TotalDias
                 && MesFacturacion!.Equals(otroPeriodo.MesFacturacion);
         }
 

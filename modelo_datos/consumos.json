@@ -1,0 +1,127 @@
+[
+    {
+      "mes_facturacion": "Diciembre 2024",
+      "periodo_id":"6807c5bd6eb0592846fff3f3",
+      "servicio": "Gas",
+      "servicio_id": "67ff19855a0a21d80f9688c3",
+      "lectura_actual": 534,
+      "lectura_anterior": 527,
+      "constante": 0.845
+    },
+    {
+      "mes_facturacion": "Abril 2025",
+      "periodo_id":"6807c5bd6eb0592846fff3f2",
+      "servicio": "Gas",
+      "servicio_id": "67ff19855a0a21d80f9688c3",
+      "lectura_actual": 719,
+      "lectura_anterior": 712,
+      "constante": 0.845
+    },
+    {
+      "mes_facturacion": "Noviembre 2024",
+      "periodo_id":"6807c5bd6eb0592846fff3f5",
+      "servicio": "Gas",
+      "servicio_id": "67ff19855a0a21d80f9688c3",
+      "lectura_actual": 527,
+      "lectura_anterior": 520,
+      "constante": 0.845
+    },
+    {
+      "mes_facturacion": "Enero 2025",
+      "periodo_id":"6807c5bd6eb0592846fff3f6",
+      "servicio": "Electricidad",
+      "servicio_id":"67ff19855a0a21d80f9688c2",
+      "lectura_actual": 7563,
+      "lectura_anterior": 7460,
+      "constante": 1
+    },
+    {
+      "mes_facturacion": "Febrero 2025",
+      "periodo_id":"6807c5bd6eb0592846fff3f7",
+      "servicio": "Electricidad",
+      "servicio_id":"67ff19855a0a21d80f9688c2",
+      "lectura_actual": 7690,
+      "lectura_anterior": 7563,
+      "constante": 1
+    },
+    {
+      "mes_facturacion": "Enero 2025",
+      "periodo_id":"6807c5bd6eb0592846fff3f6",
+      "servicio": "Gas",
+      "servicio_id": "67ff19855a0a21d80f9688c3",
+      "lectura_actual": 542,
+      "lectura_anterior": 534,
+      "constante": 0.845
+    },
+    {
+      "mes_facturacion": "Octubre 2024",
+      "periodo_id":"6807c5bd6eb0592846fff3f8",
+      "servicio": "Electricidad",
+      "servicio_id":"67ff19855a0a21d80f9688c2",
+      "lectura_actual": 7280,
+      "lectura_anterior": 7183,
+      "constante": 1
+    },
+    {
+      "mes_facturacion": "Febrero 2025",
+      "periodo_id":"6807c5bd6eb0592846fff3f7",
+      "servicio": "Gas",
+      "servicio_id": "67ff19855a0a21d80f9688c3",
+      "lectura_actual": 553,
+      "lectura_anterior": 542,
+      "constante": 0.845
+    },
+    {
+      "mes_facturacion": "Marzo 2025",
+      "periodo_id":"6807c5bd6eb0592846fff3f4",
+      "servicio": "Electricidad",
+      "lectura_actual": 7802,
+      "lectura_anterior": 7690,
+      "constante": 1
+    },
+    {
+      "mes_facturacion": "Diciembre 2024",
+      "periodo_id":"6807c5bd6eb0592846fff3f3",
+      "servicio": "Electricidad",
+      "servicio_id":"67ff19855a0a21d80f9688c2",
+      "lectura_actual": 7460,
+      "lectura_anterior": 7369,
+      "constante": 1
+    },
+    {
+      "mes_facturacion": "Marzo 2025",
+      "periodo_id":"6807c5bd6eb0592846fff3f4",
+      "servicio": "Gas",
+      "servicio_id": "67ff19855a0a21d80f9688c3",
+      "lectura_actual": 564,
+      "lectura_anterior": 553,
+      "constante": 0.845
+    },
+    {
+      "mes_facturacion": "Noviembre 2024",
+      "periodo_id":"6807c5bd6eb0592846fff3f5",
+      "servicio": "Electricidad",
+      "servicio_id":"67ff19855a0a21d80f9688c2",
+      "lectura_actual": 7369,
+      "lectura_anterior": 7280,
+      "constante": 1
+    },
+    {
+      "mes_facturacion": "Abril 2025",
+      "periodo_id":"6807c5bd6eb0592846fff3f2",
+      "servicio": "Electricidad",
+      "servicio_id":"67ff19855a0a21d80f9688c2",
+      "lectura_actual": 7892,
+      "lectura_anterior": 7802,
+      "constante": 1
+    },
+    {
+      "mes_facturacion": "Octubre 2024",
+      "periodo_id":"6807c5bd6eb0592846fff3f8",
+      "servicio": "Gas",
+      "servicio_id": "67ff19855a0a21d80f9688c3",
+      "lectura_actual": 520,
+      "lectura_anterior": 514,
+      "constante": 0.845
+    }
+  ]

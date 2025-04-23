@@ -151,8 +151,8 @@ db.createCollection("periodos",{
                     total_dias: {
                         bsonType: 'int',
                         minimum: 1,
-                        maximum: 31,
-                        description: 'Total de días del período (entre 1 y 31)'
+                        maximum: 32,
+                        description: 'Total de días del período (entre 1 y 32)'
                     }
                 },
                 additionalProperties: false

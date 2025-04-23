@@ -1,9 +1,7 @@
 ﻿using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.DbContexts;
-using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Exceptions;
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Interfaces;
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models;
 using MongoDB.Driver;
-using System.Data;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
 {
@@ -91,7 +89,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
                 periodoExistente = resultado;
 
             return periodoExistente;
-        }        
+        }
 
         public async Task<List<Consumo>> GetAssociatedConsumptionAsync(string periodo_id)
         {
@@ -102,8 +100,8 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
                 .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
 
             var losConsumos = await coleccionConsumos
-                .Find(consumo => consumo.PeriodoId == periodo_id)
-                .SortBy(consumo => consumo.MesFacturacion)
+                .Find(consumo => consumo.PeriodoId!.ToLower() == periodo_id.ToLower())
+                .SortBy(consumo => consumo.Servicio)
                 .ToListAsync();
 
             return losConsumos;

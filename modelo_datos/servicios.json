@@ -1,10 +1,16 @@
 [
-    {
-      "nombre": "Electricidad",
-      "unidad_medida": "kwh"
+  {
+    "_id": {
+    "$oid": "67ff19855a0a21d80f9688c2"
     },
-    {
-      "nombre": "Gas",
-      "unidad_medida": "m3"
-    }
+    "nombre": "Electricidad",
+    "unidad_medida": "kwh"
+  },
+  {
+    "_id": {
+    "$oid": "67ff19855a0a21d80f9688c3"
+    },
+    "nombre": "Gas",
+    "unidad_medida": "m3"
+  }
 ]

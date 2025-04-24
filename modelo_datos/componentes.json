@@ -1,0 +1,88 @@
+[{
+  "_id": {
+    "$oid": "68091b7e2dc9dcff3f70f70e"
+  },
+  "nombre": "Comercialización",
+  "servicio": "Electricidad",
+  "servicio_id": "67ff19855a0a21d80f9688c2"
+},
+{
+  "_id": {
+    "$oid": "68091b7e2dc9dcff3f70f70f"
+  },
+  "nombre": "Distribución",
+  "servicio": "Electricidad",
+  "servicio_id": "67ff19855a0a21d80f9688c2"
+},
+{
+  "_id": {
+    "$oid": "68091b7e2dc9dcff3f70f710"
+  },
+  "nombre": "Generación",
+  "servicio": "Electricidad",
+  "servicio_id": "67ff19855a0a21d80f9688c2"
+},
+{
+  "_id": {
+    "$oid": "68091b7e2dc9dcff3f70f711"
+  },
+  "nombre": "Pérdidas",
+  "servicio": "Electricidad",
+  "servicio_id": "67ff19855a0a21d80f9688c2"
+},
+{
+  "_id": {
+    "$oid": "68091b7e2dc9dcff3f70f712"
+  },
+  "nombre": "Restricciones",
+  "servicio": "Electricidad",
+  "servicio_id": "67ff19855a0a21d80f9688c2"
+},
+{
+  "_id": {
+    "$oid": "68091b7e2dc9dcff3f70f713"
+  },
+  "nombre": "Transmisión",
+  "servicio": "Electricidad",
+  "servicio_id": "67ff19855a0a21d80f9688c2"
+},
+{
+  "_id": {
+    "$oid": "68091b7e2dc9dcff3f70f714"
+  },
+  "nombre": "Comercialización",
+  "servicio": "Gas",
+  "servicio_id": "67ff19855a0a21d80f9688c3"
+},
+{
+  "_id": {
+    "$oid": "68091b7e2dc9dcff3f70f715"
+  },
+  "nombre": "Compra",
+  "servicio": "Gas",
+  "servicio_id": "67ff19855a0a21d80f9688c3"
+},
+{
+  "_id": {
+    "$oid": "68091b7e2dc9dcff3f70f716"
+  },
+  "nombre": "Confiabilidad",
+  "servicio": "Gas",
+  "servicio_id": "67ff19855a0a21d80f9688c3"
+},
+{
+  "_id": {
+    "$oid": "68091b7e2dc9dcff3f70f717"
+  },
+  "nombre": "Distribución",
+  "servicio": "Gas",
+  "servicio_id": "67ff19855a0a21d80f9688c3"
+},
+{
+  "_id": {
+    "$oid": "68091b7e2dc9dcff3f70f718"
+  },
+  "nombre": "Transporte",
+  "servicio": "Gas",
+  "servicio_id": "67ff19855a0a21d80f9688c3"
+}]

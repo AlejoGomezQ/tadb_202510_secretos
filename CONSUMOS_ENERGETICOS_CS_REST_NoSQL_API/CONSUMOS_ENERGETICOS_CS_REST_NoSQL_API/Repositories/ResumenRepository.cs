@@ -34,6 +34,14 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
 
             unResumen.Componentes = totalComponentes;
 
+
+            //Total Consumos
+            var coleccionConsumos = conexion.GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
+            var totalConsumos = await coleccionConsumos
+                .EstimatedDocumentCountAsync();
+
+            unResumen.Consumos = totalConsumos;
+
             //sentenciaSQL = "SELECT COUNT(id) total FROM core.departamentos";
             //unResumen.Departamentos = await conexion
             //    .QueryFirstAsync<int>(sentenciaSQL, new DynamicParameters());

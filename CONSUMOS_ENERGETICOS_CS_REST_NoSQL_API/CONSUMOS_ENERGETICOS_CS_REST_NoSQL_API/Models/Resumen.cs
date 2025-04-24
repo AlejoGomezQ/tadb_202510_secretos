@@ -12,5 +12,8 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models
 
         [JsonPropertyName("componentes")]
         public long Componentes { get; set; } = 0;
+
+        [JsonPropertyName("consumos")]
+        public long Consumos { get; set; } = 0;
     }
 }

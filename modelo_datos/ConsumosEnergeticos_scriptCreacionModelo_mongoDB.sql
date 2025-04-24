@@ -161,3 +161,94 @@ db.createCollection("periodos",{
     } 
 );
 
+
+-- Colección: Componentes
+db.createCollection("componentes",{
+        validator: {
+            "$jsonSchema": {
+                bsonType: 'object',
+                title: 'Componentes de la tarifa de cada uno de los servicios',
+                required: [
+                    "_id",
+                    "nombre",
+                    "servicio",
+                    "servicio_id"
+                ],
+                properties: {
+                    _id: {
+                        bsonType: 'objectId'
+                    },
+                    nombre: {
+                        bsonType: "string",
+                        description: 'Nombre del componente tarifario'
+                    },
+                    servicio: {
+                        bsonType: "string",
+                        description: 'Nombre del servicio que utiliza este componente tarifario'
+                    },
+                    servicio_id: {
+                        bsonType: "string",
+                        description: 'ID del servicio que utiliza este componente tarifario'
+                    }
+                },
+                additionalProperties: false
+            }
+        }
+    } 
+);
+
+
+-- Colección: Consumos
+db.createCollection("consumos",{
+        validator: {
+            "$jsonSchema": {
+                bsonType: "object",
+                title: 'Registros los consumos por servicio por periodo',
+                required: [
+                    "_id",
+                    "constante",
+                    "lectura_actual",
+                    "lectura_anterior",
+                    "mes_facturacion",
+                    "periodo_id",
+                    "servicio",
+                    "servicio_id"
+                ],
+                properties: {
+                    _id: {
+                        bsonType: "objectId"
+                    },
+                    constante: {
+                        bsonType:  ["double","int"],
+                        description: 'Factor de multiplicación utilizada para el servicio durante el periodo'                    
+                    },
+                    lectura_actual: {
+                        bsonType: "int",
+                        description: 'Lectura actual del medidor en el periodo '                    
+                    },
+                    lectura_anterior: {
+                        bsonType: "int",
+                        description: 'Lectura anterior del medidor en el periodo'                    
+                    },
+                    "mes_facturacion": {
+                        bsonType: "string",
+                        description: 'Mes para el cual se genera la factura del periodo'                    
+                    },
+                    "periodo_id": {
+                        bsonType: "string",
+                        description: 'Id del periodo en el cual se está registrando el consumo'                    
+                    },
+                    "servicio": {
+                        bsonType: "string",
+                        description: 'Nombre del servicio que utiliza este componente tarifario'                    
+                    },
+                    "servicio_id": {
+                        bsonType: "string",
+                        description: 'Id del servicio para el cual se está registrando el consumo en el periodo'                    
+                    },
+                },
+                additionalProperties: false
+            }
+        }
+    } 
+);

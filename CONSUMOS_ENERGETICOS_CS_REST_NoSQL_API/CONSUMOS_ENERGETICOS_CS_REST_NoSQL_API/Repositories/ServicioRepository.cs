@@ -58,7 +58,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
                 .GetCollection<Componente>(contextoDB.ConfiguracionColecciones.ColeccionComponentes);
 
             var losComponentes = await coleccionComponentes
-                .Find(componente => componente.ServicioId == servicio_id)
+                .Find(componente => componente.ServicioId!.ToLower() == servicio_id.ToLower())
                 .SortBy(componente => componente.Nombre)
                 .ToListAsync();
 
@@ -74,7 +74,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
                 .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
 
             var losConsumos = await coleccionConsumos
-                .Find(consumo => consumo.ServicioId == servicio_id)
+                .Find(consumo => consumo.ServicioId!.ToLower() == servicio_id.ToLower())
                 .SortBy(consumo => consumo.MesFacturacion)
                 .ToListAsync();
 

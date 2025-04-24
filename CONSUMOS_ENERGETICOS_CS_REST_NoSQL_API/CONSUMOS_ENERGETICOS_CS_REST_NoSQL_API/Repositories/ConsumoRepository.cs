@@ -16,7 +16,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
                 .CreateConnection();
 
             var coleccionConsumos = conexion
-                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
+                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.VistaConsumos);
 
             var losConsumos = await coleccionConsumos
                 .Find(_ => true)
@@ -34,7 +34,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
                 .CreateConnection();
 
             var coleccionConsumos = conexion
-                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
+                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.VistaConsumos);
 
             var builder = Builders<Consumo>.Filter;
             var filtro = builder.And(

@@ -3,8 +3,6 @@ using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Exceptions;
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Interfaces;
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models;
 using MongoDB.Driver;
-using System.Data;
-using System.Reflection.PortableExecutable;
 
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
@@ -71,7 +69,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
                 .CreateConnection();
 
             var coleccionConsumos = conexion
-                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
+                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.VistaConsumos);
 
             var losConsumos = await coleccionConsumos
                 .Find(consumo => consumo.ServicioId!.ToLower() == servicio_id.ToLower())

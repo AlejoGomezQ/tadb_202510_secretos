@@ -7,6 +7,7 @@
         public string ColeccionComponentes { get; set; } = null!;
         public string ColeccionServicios { get; set; } = null!;
         public string ColeccionPeriodos { get; set; } = null!;
+        public string VistaConsumos { get; set; } = null!;
 
         public ConsumosEnergeticosDatabaseSettings(IConfiguration unaConfiguracion)
         {
@@ -17,6 +18,7 @@
             ColeccionComponentes = configuracion.GetSection("ColeccionComponentes").Value!;
             ColeccionServicios = configuracion.GetSection("ColeccionServicios").Value!;
             ColeccionPeriodos = configuracion.GetSection("ColeccionPeriodos").Value!;
+            VistaConsumos = configuracion.GetSection("VistaConsumos").Value!;
         }
     }
 }

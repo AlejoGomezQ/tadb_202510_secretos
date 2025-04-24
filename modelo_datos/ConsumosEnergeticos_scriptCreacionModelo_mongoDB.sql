@@ -84,7 +84,7 @@ db.getUsers()
 -- Con el usuario servicios_app
 
 -- ****************************************
--- Creación de Colecciones
+--   Creación de Colecciones
 -- ****************************************
 
 -- Colección: Servicios
@@ -251,4 +251,27 @@ db.createCollection("consumos",{
             }
         }
     } 
+);
+
+
+-- ****************************************
+--   Creación de Vistas
+-- ****************************************
+
+-- Vista: v_consumos
+db.createView(
+  "v_consumos",
+  "consumos",
+  [
+    {
+      $addFields: {
+        valor: {
+          $multiply: [
+            { $subtract: ["$lectura_actual", "$lectura_anterior"] },
+            "$constante"
+          ]
+        }
+      }
+    }
+  ]
 );

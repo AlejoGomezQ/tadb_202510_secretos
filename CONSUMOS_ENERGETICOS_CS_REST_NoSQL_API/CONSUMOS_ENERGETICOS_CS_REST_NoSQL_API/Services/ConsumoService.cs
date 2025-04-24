@@ -33,6 +33,10 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             if (string.IsNullOrEmpty(periodoExistente.Id))
                 throw new AppValidationException($"No existe un periodo para el mes de facturacion {unConsumo.MesFacturacion}.");
 
+            //Si los datos del periodo de facturación son inconsistentes, no se puede crear
+            if (periodoExistente.MesFacturacion != unConsumo.MesFacturacion)
+                throw new AppValidationException($"Datos del periodo de facturación {unConsumo.MesFacturacion} son inconsistentes.");
+
             //Validamos si existe un servicio con ese nombre 
             var servicioExistente = await _servicioRepository
                 .GetByNameAsync(unConsumo.Servicio!);
@@ -40,6 +44,9 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             //Si no existe, no se puede registrar consumo
             if (string.IsNullOrEmpty(servicioExistente.Id))
                 throw new AppValidationException($"No existe un servicio {unConsumo.Servicio} para el cual registrar consumo.");
+
+            if (servicioExistente.Nombre != unConsumo.Servicio)
+                throw new AppValidationException($"Datos del servicio son inconsistentes.");
 
             //Si ya existe consumo para ese mes y servicio, se retorna el objeto para garantizar idempotencia
             var consumoExistente = await _consumoRepository
@@ -86,6 +93,10 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             if (string.IsNullOrEmpty(periodoExistente.Id))
                 throw new AppValidationException($"No existe un periodo para el mes de facturacion {unConsumo.MesFacturacion}.");
 
+            //Si los datos del periodo de facturación son inconsistentes, no se puede crear
+            if (periodoExistente.MesFacturacion != unConsumo.MesFacturacion)
+                throw new AppValidationException($"Datos del periodo de facturación {unConsumo.MesFacturacion} son inconsistentes.");
+
             //Validamos si existe un servicio con ese nombre 
             var servicioExistente = await _servicioRepository
                 .GetByNameAsync(unConsumo.Servicio!);
@@ -93,6 +104,9 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             //Si no existe, no se puede registrar consumo
             if (string.IsNullOrEmpty(servicioExistente.Id))
                 throw new AppValidationException($"No existe un servicio {unConsumo.Servicio} para el cual registrar consumo.");
+
+            if (servicioExistente.Nombre != unConsumo.Servicio)
+                throw new AppValidationException($"Datos del servicio son inconsistentes.");
 
             //Si no existe consumo para ese mes y servicio, no se puede actualizar
             var consumoExistente = await _consumoRepository
@@ -177,8 +191,14 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             if (unConsumo.MesFacturacion!.Length == 0)
                 return "No se puede insertar un consumo para un dato de mes de facturación nulo";
 
+            if (unConsumo.PeriodoId!.Length == 0)
+                return "No se puede insertar un consumo para un dato de Id de periodo de facturación nulo";
+
             if (unConsumo.Servicio!.Length == 0)
                 return "No se puede insertar un consumo para un dato de servicio nulo";
+
+            if (unConsumo.ServicioId!.Length == 0)
+                return "No se puede insertar un consumo para un dato de Id de servicio nulo";
 
             if (unConsumo.LecturaActual <= 0 || unConsumo.LecturaAnterior <= 0)
                 return "No se puede insertar un consumo con datos de lectura menores o iguales a cero";

@@ -23,7 +23,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models
 
         [BsonElement("servicio_id")]
         [JsonPropertyName("servicio_id")]
-        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonRepresentation(BsonType.String)]
         public string? ServicioId { get; set; } = string.Empty;
         public override bool Equals(object? obj)
         {

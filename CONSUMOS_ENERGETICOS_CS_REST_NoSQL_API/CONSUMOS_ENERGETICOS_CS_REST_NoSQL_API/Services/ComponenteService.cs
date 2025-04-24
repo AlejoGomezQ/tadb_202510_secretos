@@ -4,9 +4,11 @@ using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
 {
-    public class ComponenteService(IComponenteRepository componenteRepository)
+    public class ComponenteService(IComponenteRepository componenteRepository,
+                                    IServicioRepository servicioRepository)
     {
         private readonly IComponenteRepository _componenteRepository = componenteRepository;
+        private readonly IServicioRepository _servicioRepository = servicioRepository;
 
         public async Task<List<Componente>> GetAllAsync()
         {
@@ -33,14 +35,19 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             if (!string.IsNullOrEmpty(resultadoValidacion))
                 throw new AppValidationException(resultadoValidacion);
 
-            //Validamos primero si existe con ese nombre y ese servicio
+            var servicioExistente = await _servicioRepository
+                .GetByIdAsync(unComponente.ServicioId!);
+
+            if (string.IsNullOrEmpty(servicioExistente.Id))
+                throw new AppValidationException($"No existe un servicio asociado al ID {unComponente.ServicioId} ");
+
+            if (servicioExistente.Nombre != unComponente.Servicio)
+                throw new AppValidationException($"Los datos de servicio suministrados no coinciden.");
+
+
+            //Validamos primero si existe ese componente con ese nombre y ese servicio
             var componenteExistente = await _componenteRepository
                 .GetByNameAndServiceAsync(unComponente.Nombre!, unComponente.Servicio!);
-
-            // Si existe, no se puede insertar
-            if (!string.IsNullOrEmpty(componenteExistente.Id))
-                throw new AppValidationException($"Ya existe un componente {unComponente.Nombre} " +
-                $"asociado al servicio {unComponente.Servicio}");
 
             //Si existe y los datos son iguales, se retorna el objeto para garantizar idempotencia
             if (componenteExistente.Nombre == unComponente.Nombre && componenteExistente.Servicio == unComponente.Servicio)
@@ -72,12 +79,20 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             if (!string.IsNullOrEmpty(resultadoValidacion))
                 throw new AppValidationException(resultadoValidacion);
 
-            //Validamos primero si existe con ese Guid
             var componenteExistente = await _componenteRepository
                 .GetByIdAsync(unComponente.Id!);
 
             if (string.IsNullOrEmpty(componenteExistente.Id))
                 throw new AppValidationException($"No existe un componente con el Guid {unComponente.Id} que se pueda actualizar");
+
+            var servicioExistente = await _servicioRepository
+                .GetByIdAsync(unComponente.ServicioId!);
+
+            if (string.IsNullOrEmpty(servicioExistente.Id))
+                throw new AppValidationException($"No existe un servicio asociado al ID {unComponente.ServicioId} ");
+
+            if (servicioExistente.Nombre != unComponente.Servicio)
+                throw new AppValidationException($"Los datos de servicio suministrados no coinciden.");
 
             //Si existe y los datos son iguales, se retorna el objeto para garantizar idempotencia
             if (componenteExistente.Equals(unComponente))
@@ -102,7 +117,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             return componenteExistente;
         }
 
-        public async Task<string> RemoveAsync(string componente_id)
+        public async Task<Componente> RemoveAsync(string componente_id)
         {
             Componente unComponente = await _componenteRepository
                 .GetByIdAsync(componente_id);
@@ -110,7 +125,6 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
             if (string.IsNullOrEmpty(unComponente.Id))
                 throw new AppValidationException($"Componente no encontrado con el id {componente_id}");
 
-            string nombreComponenteEliminado = unComponente.Nombre!;
 
             try
             {
@@ -125,7 +139,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
                 throw;
             }
 
-            return nombreComponenteEliminado;
+            return unComponente;
         }
         private static string EvaluateComponentDetailsAsync(Componente unComponente)
         {
@@ -134,6 +148,9 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Services
 
             if (unComponente.Servicio!.Length == 0)
                 return "No se puede insertar un componente con un servicio nulo.";
+
+            if (unComponente.ServicioId!.Length == 0)
+                return "No se puede insertar un componente con un ID de servicio nulo.";
 
             return string.Empty;
         }

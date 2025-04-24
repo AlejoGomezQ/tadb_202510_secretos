@@ -3,7 +3,6 @@ using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Exceptions;
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Interfaces;
 using CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models;
 using MongoDB.Driver;
-using System.Data;
 
 namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
 {
@@ -56,19 +55,26 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
         {
             bool resultadoAccion = false;
 
-            var conexion = contextoDB
-                .CreateConnection();
+            try
+            {
+                var conexion = contextoDB
+                    .CreateConnection();
 
-            var coleccionConsumos = conexion
-                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
+                var coleccionConsumos = conexion
+                    .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
 
-            await coleccionConsumos
-                .InsertOneAsync(unConsumo);
+                await coleccionConsumos
+                    .InsertOneAsync(unConsumo);
 
-            var resultado = await GetByBillingMonthAndServiceAsync(unConsumo.MesFacturacion!, unConsumo.Servicio!);
+                var resultado = await GetByBillingMonthAndServiceAsync(unConsumo.MesFacturacion!, unConsumo.Servicio!);
 
-            if (resultado is not null)
-                resultadoAccion = true;
+                if (resultado is not null)
+                    resultadoAccion = true;
+            }
+            catch (MongoWriteException error)
+            {
+                throw new DbOperationException($"Fallo al grabar el componente. {error.Message}");
+            }
 
             return resultadoAccion;
         }
@@ -77,17 +83,25 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
         {
             bool resultadoAccion = false;
 
-            var conexion = contextoDB
-                .CreateConnection();
+            try
+            {
+                var conexion = contextoDB
+                    .CreateConnection();
 
-            var coleccionConsumos = conexion
-                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
+                var coleccionConsumos = conexion
+                    .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
 
-            var resultado = await coleccionConsumos
-                .ReplaceOneAsync(consumo => consumo.Id == unConsumo.Id, unConsumo);
+                var resultado = await coleccionConsumos
+                    .ReplaceOneAsync(consumo => consumo.Id == unConsumo.Id, unConsumo);
 
-            if (resultado.IsAcknowledged)
-                resultadoAccion = true;
+                if (resultado.IsAcknowledged)
+                    resultadoAccion = true;
+
+            }
+            catch (MongoWriteException error)
+            {
+                throw new DbOperationException($"Fallo al grabar el componente. {error.Message}");
+            }
 
             return resultadoAccion;
         }
@@ -96,17 +110,24 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Repositories
         {
             bool resultadoAccion = false;
 
-            var conexion = contextoDB
-                .CreateConnection();
+            try
+            {
+                var conexion = contextoDB
+                    .CreateConnection();
 
-            var coleccionConsumos = conexion
-                .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
+                var coleccionConsumos = conexion
+                    .GetCollection<Consumo>(contextoDB.ConfiguracionColecciones.ColeccionConsumos);
 
-            var resultado = await coleccionConsumos
-                .DeleteOneAsync(consumo => consumo.Id == unConsumo.Id);
+                var resultado = await coleccionConsumos
+                    .DeleteOneAsync(consumo => consumo.Id == unConsumo.Id);
 
-            if (resultado.IsAcknowledged)
-                resultadoAccion = true;
+                if (resultado.IsAcknowledged)
+                    resultadoAccion = true;
+            }
+            catch (MongoWriteException error)
+            {
+                throw new DbOperationException($"Fallo al grabar el componente. {error.Message}");
+            }
 
             return resultadoAccion;
         }

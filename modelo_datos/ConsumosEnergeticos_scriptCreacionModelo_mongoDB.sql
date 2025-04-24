@@ -187,7 +187,7 @@ db.createCollection("componentes",{
                         description: 'Nombre del servicio que utiliza este componente tarifario'
                     },
                     servicio_id: {
-                        bsonType: "string",
+                        bsonType: ["objectId","string"],
                         description: 'ID del servicio que utiliza este componente tarifario'
                     }
                 },
@@ -235,7 +235,7 @@ db.createCollection("consumos",{
                         description: 'Mes para el cual se genera la factura del periodo'                    
                     },
                     "periodo_id": {
-                        bsonType: "string",
+                        bsonType: ["objectId","string"],
                         description: 'Id del periodo en el cual se está registrando el consumo'                    
                     },
                     "servicio": {
@@ -243,7 +243,7 @@ db.createCollection("consumos",{
                         description: 'Nombre del servicio que utiliza este componente tarifario'                    
                     },
                     "servicio_id": {
-                        bsonType: "string",
+                        bsonType: ["objectId","string"],
                         description: 'Id del servicio para el cual se está registrando el consumo en el periodo'                    
                     },
                 },

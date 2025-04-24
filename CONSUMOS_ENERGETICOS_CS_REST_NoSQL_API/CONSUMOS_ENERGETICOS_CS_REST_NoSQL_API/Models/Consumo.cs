@@ -13,7 +13,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models
 
         [BsonElement("servicio_id")]
         [JsonPropertyName("servicio_id")]
-        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonRepresentation(BsonType.String)]
         public string? ServicioId { get; set; } = string.Empty;
 
         [BsonElement("servicio")]
@@ -23,7 +23,7 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Models
 
         [BsonElement("periodo_id")]
         [JsonPropertyName("periodo_id")]
-        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonRepresentation(BsonType.String)]
         public string? PeriodoId { get; set; } = string.Empty;
 
         [BsonElement("mes_facturacion")]

@@ -83,10 +83,10 @@ namespace CONSUMOS_ENERGETICOS_CS_REST_NoSQL_API.Controllers
         {
             try
             {
-                var nombreServicioBorrado = await _componenteService
+                var componenteBorrado = await _componenteService
                     .RemoveAsync(componente_id);
 
-                return Ok($"El servicio {nombreServicioBorrado} fue eliminado correctamente!");
+                return Ok($"El componente {componenteBorrado.Nombre} para el servicio {componenteBorrado.Servicio} fue eliminado correctamente!");
             }
             catch (AppValidationException error)
             {
